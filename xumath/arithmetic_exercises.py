@@ -133,6 +133,9 @@ class ExerciseBase:
     def _addScore(self, demote=False):
         mssg = None
         if not demote:
+            # scored a question
+            # calculate XP
+            self.usrProf.addXP(self._calcXP())
             # add 1 to score
             self.score += 1
             if self.level == self.nLevels - 1 and self.score == self.MAX_SCORE:
@@ -164,7 +167,6 @@ class ExerciseBase:
     def _saveUsrProf(self):
         self.usrProf[self.name]["level"] = self.level
         self.usrProf[self.name]["score"] = self.score
-        self.usrProf.addXP(self._calcXP())
         self.usrProf.dump()
 
 

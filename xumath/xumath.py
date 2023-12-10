@@ -29,14 +29,16 @@ def main():
         "Version: %s" % __version__,
         "",
         "Hello Hanyong!",
-        "Welcome to XU Math!",
+        "Welcome back to XU Math!",
         "I am lucky to have you!",
+        "",
         sep="\n",
     )
 
     # user profile
     usrProfFile = os.path.join(os.path.dirname(sys.argv[0]), __user__ + ".prf")
     usrProf = UserProfile(usrProfFile)
+    print(usrProf.getStreakXPInfo())
     mainMenu = menus.ListMenu(
         Addition(usrProf),
         Subtraction(usrProf),
@@ -50,7 +52,7 @@ def main():
             print("This is the main menu, cannot go back. Exit the app.")
             sys.exit()
         elif choice == shortcuts.CHECK_SCORE:
-            print(usrProf.getScoreInfo())
+            print(usrProf.getStreakXPInfo())
         else:
             ex = mainMenu.getItem(choice)
             if ex is not None:
