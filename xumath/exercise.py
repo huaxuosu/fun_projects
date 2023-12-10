@@ -9,14 +9,14 @@ class ExerciseBase:
         There are n levels
         You start at level 1
         You will need to get 5 questions correctly answered in a row to move to the next level
-        If you get a question incorrect, you will be downgraded to previous level, and
+        If you get a question incorrect, you will be demoted to previous level, and
         you will need to get 3 more questions right to move back.
         If you reach the highest level, you can keep practicing as much as you want.
         """
 
     ANSWER_FORMAT = "integer number"
     SCORE_TO_ADVANCE = 5
-    INIT_SCORE_AF_DOWNGRADE = 2
+    INIT_SCORE_AF_DEMOTION = 2
     MAX_N_ATTEMPTS = 2
 
     @classmethod
@@ -99,8 +99,8 @@ class ExerciseBase:
                         if nAttempts >= self.__class__.MAX_N_ATTEMPTS:
                             if self.level > 0:
                                 self.level -= 1
-                                print("Incorrect answer, you will be demoted to level %d." % (self.level-1))
-                                self.score = self.__class__.INIT_SCORE_AF_DOWNGRADE
+                                print("Incorrect answer, you will be demoted to level %d." % (self.level+1))
+                                self.score = self.__class__.INIT_SCORE_AF_DEMOTION
                             else:
                                 print("Incorrect answer, your level score is reset to 0")
                                 self.score = 0
