@@ -8,12 +8,14 @@ import sys
 # internal modules
 import shortcuts
 import menus
-from addition import Addition
-from subtraction import Subtraction
-from multiplication import Multiplication
-from division import Division
+from arithmetic_exercises import (
+    Addition,
+    Subtraction,
+    Multiplication,
+    Division,
+)
 
-__version__ = "v0.0.1"
+__version__ = "v0.0.2"
 
 
 def main():
