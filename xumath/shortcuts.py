@@ -9,8 +9,8 @@ shortcuts = {
     2: (GO_BACK, "Ctrl + B to go back to the precious menu."),
     # ctrl + E
     5: (EXIT_APP, "Ctrl + E to exit."),
-    # ctrl + A
-    1: (CHECK_SCORE, "Ctrl + A to check your score.")
+    # ctrl + X
+    24: (CHECK_SCORE, "Ctrl + X to check your score.")
 }
 
 
