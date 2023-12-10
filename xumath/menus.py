@@ -9,9 +9,9 @@ class ListMenu:
         print(
             "",
             "Please select an item from the following list.",
-            *shortcuts.getShortcuts(),
-            "",
             "\n".join("%d: %s" % (i + 1, e) for i, e in enumerate(self.items)),
+            "",
+            *shortcuts.getShortcuts(),
             sep="\n",
         )
         while True:
