@@ -1,0 +1,5 @@
+# ignore ALL .prf files
+*.prf
+
+# ignore ALL files in ANY directory named temp
+temp/

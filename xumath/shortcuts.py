@@ -1,6 +1,7 @@
+import sys
+
 EXIT_APP = 0
 GO_BACK = 1_000_001
-RESTART = 1_000_002
 CHECK_SCORE = 1_000_003
 
 shortcuts = {
@@ -8,8 +9,6 @@ shortcuts = {
     2: (GO_BACK, "Ctrl + B to go back to the precious menu."),
     # ctrl + D
     4: (EXIT_APP, "Ctrl + D to exit."),
-    # ctrl + A
-    1: (RESTART, "Ctrl + A to restart the current exercise."),
     # ctrl + S
     19: (CHECK_SCORE, "Ctrl + S to check your score.")
 }
@@ -21,4 +20,8 @@ def getShortcuts():
 
 def parseShortcuts(inp):
     c = ord(inp[0]) if len(inp) == 1 else -1
-    return shortcuts.get(c, [None])[0]
+    c = shortcuts.get(c, [None])[0]
+    if c == EXIT_APP:
+        print("Exit the app!")
+        sys.exit()
+    return c

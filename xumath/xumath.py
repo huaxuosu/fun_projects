@@ -5,8 +5,10 @@ Created on Sat Dec  9 13:50:54 2023
 """
 
 import sys
+import os.path
 # internal modules
 import shortcuts
+from user_profile import UserProfile
 import menus
 from arithmetic_exercises import (
     Addition,
@@ -16,6 +18,7 @@ from arithmetic_exercises import (
 )
 
 __version__ = "v0.0.2"
+__user__ = "hanyong"
 
 
 def main():
@@ -31,11 +34,14 @@ def main():
         sep="\n",
     )
 
+    # user profile
+    usrProfFile = os.path.join(os.path.dirname(sys.argv[0]), __user__ + ".prf")
+    usrProf = UserProfile(usrProfFile)
     mainMenu = menus.ListMenu(
-        Addition(),
-        Subtraction(),
-        Multiplication(),
-        Division(),
+        Addition(usrProf),
+        Subtraction(usrProf),
+        Multiplication(usrProf),
+        Division(usrProf),
     )
 
     while True:
@@ -43,9 +49,12 @@ def main():
         if choice == shortcuts.GO_BACK:
             print("This is the main menu, cannot go back. Exit the app.")
             sys.exit()
-        ex = mainMenu.getItem(choice)
-        if ex is not None:
-            ex.main()
+        elif choice == shortcuts.CHECK_SCORE:
+            print(usrProf.getScoreInfo())
+        else:
+            ex = mainMenu.getItem(choice)
+            if ex is not None:
+                ex.main()
 
 
 if __name__ == "__main__":

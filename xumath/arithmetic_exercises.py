@@ -1,23 +1,32 @@
-import sys
 import random
 # internal modules
 import shortcuts
+from user_profile import UserProfile
 
 
 class ExerciseBase:
     """
-        There are n levels
-        You start at level 1
-        You will need to get 5 questions correctly answered in a row to move to the next level
-        If you get a question incorrect, you will be demoted to previous level, and
-        you will need to get 3 more questions right to move back.
-        If you reach the highest level, you can keep practicing as much as you want.
-        """
+    There are n levels
+    You start at level 1
+    You will need to get 5 questions correctly answered in a row to move to the next level
+    If you get a question incorrect, you will be demoted to previous level, and
+    you will need to get 3 more questions right to move back.
+    If you reach the highest level, you can keep practicing as much as you want.
+
+    User level info and XP scores are stored in a dictionary that is pickled to a file
+    the userProf dictionary needs to have
+        Exercise Name: {
+            level: current level
+            score: score of the current level
+        }
+    """
 
     ANSWER_FORMAT = "integer number"
     SCORE_TO_ADVANCE = 5
+    MAX_SCORE = 100
     INIT_SCORE_AF_DEMOTION = 2
     MAX_N_ATTEMPTS = 2
+    XP_DISTRIBUTION = [5, 10, 10, 20, 40]
 
     @classmethod
     def validateAnswer(cls, q, a):
@@ -25,10 +34,13 @@ class ExerciseBase:
             return 0 if int(a) == eval(q) else 1
         return -1
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, usrProf: UserProfile):
+        self.usrProf = usrProf
+        assert(isinstance(self.usrProf, UserProfile))
         self.nLevels = 4
-        self.score = 0
-        self.level = 0
+        exerciseData = self.usrProf.setdefault(self.name, {})
+        self.level = exerciseData.setdefault("level", 0)
+        self.score = exerciseData.setdefault("score", 0)
 
     def generateTwoOperands(self, n1Ranges=None, n2Ranges=None):
         n1Ranges = n1Ranges or [
@@ -62,7 +74,8 @@ class ExerciseBase:
             "#################%s##" % ("#" * len(self.__repr__())),
             "# Let's practice %s #" % self.__repr__(),
             "#################%s##" % ("#" * len(self.__repr__())),
-            "Answer format: %s" % self.__class__.ANSWER_FORMAT,
+            self._getScoreInfo(),
+            "Answer format: %s" % self.ANSWER_FORMAT,
             "",
             *shortcuts.getShortcuts(),
             "",
@@ -71,7 +84,7 @@ class ExerciseBase:
         while True:
             q = self.generateExercise()
             print(
-                "Please answer the following question (%s)." % self.__class__.ANSWER_FORMAT,
+                "Please answer the following question (%s)." % self.ANSWER_FORMAT,
                 q,
                 sep="\n",
             )
@@ -79,48 +92,80 @@ class ExerciseBase:
             while True:
                 inp = input(">>> ")
                 shortcut = shortcuts.parseShortcuts(inp)
-                if shortcut == shortcuts.RESTART:
-                    self.score = 0
-                    self.level = 0
-                    break
-                elif shortcut == shortcuts.EXIT_APP:
-                    sys.exit()
-                elif shortcut == shortcuts.GO_BACK:
+                if shortcut == shortcuts.GO_BACK:
                     return
                 elif shortcut == shortcuts.CHECK_SCORE:
-                    print("Check XP score is not ready yet.")
+                    print(self._getScoreInfo())
                 elif shortcut is not None:
                     print("Unknown shortcuts", shortcut)
                 else:
-                    code = self.__class__.validateAnswer(q, inp)
-                    if code == -1:
+                    err = self.validateAnswer(q, inp)
+                    if err == 0:
+                        print("\nGreat job!\n")
+                        mssg = self._addScore()
+                        if mssg:
+                            print(mssg)
+                        break
+                    elif err == -1:
                         print("Invalid input, the answer needs to be {}, please try again.".format(
-                            self.__class__.ANSWER_FORMAT,
+                            self.ANSWER_FORMAT,
                         ))
-                    elif code == 1:
+                    elif err == 1:
                         nAttempts += 1
-                        if nAttempts >= self.__class__.MAX_N_ATTEMPTS:
-                            if self.level > 0:
-                                self.level -= 1
-                                print("Incorrect answer, you will be demoted to level %d." % (self.level+1))
-                                self.score = self.__class__.INIT_SCORE_AF_DEMOTION
-                            else:
-                                print("Incorrect answer, your level score is reset to 0")
-                                self.score = 0
+                        if nAttempts >= self.MAX_N_ATTEMPTS:
+                            mssg = self._addScore(demote=True)
+                            print("Incorrect answer. %s" % mssg)
                             break
                         else:
                             print("Incorrect answer, please try again.")
                     else:
-                        print("\nGreat job!\n")
-                        # add 1 to score
-                        self.score += 1
-                        if self.score >= self.__class__.SCORE_TO_ADVANCE:
-                            # advance to next level
-                            if self.level < self.nLevels - 1:
-                                self.score = 0
-                                self.level += 1
-                                print("Congrats!  You are promoted to level %d" % (self.level+1))
-                        break
+                        raise NotImplementedError
+
+    def _getScoreInfo(self):
+        return "{}: level {}/{}, score {}/{}".format(
+            self.name,
+            self.level + 1,
+            self.nLevels,
+            self.score,
+            self.SCORE_TO_ADVANCE if self.level < self.nLevels-1 else self.MAX_SCORE,
+        )
+
+    def _addScore(self, demote=False):
+        mssg = None
+        if not demote:
+            # add 1 to score
+            self.score += 1
+            if self.level == self.nLevels - 1 and self.score == self.MAX_SCORE:
+                mssg = "Congrats! You have achieved the highest score for the highest level."
+            elif self.score >= self.SCORE_TO_ADVANCE and self.level < self.nLevels - 1:
+                # advance to next level
+                self.score = 0
+                self.level += 1
+                mssg = "Congrats! You are promoted to level %d" % (self.level + 1)
+        elif self.score > self.SCORE_TO_ADVANCE:
+            # subtract 1 from score
+            self.score -= 1
+            mssg = self._getScoreInfo()
+        elif self.level > 0:
+            self.level -= 1
+            mssg = "You are demoted to level %d." % (self.level + 1)
+            self.score = self.INIT_SCORE_AF_DEMOTION
+        else:
+            mssg = "Your level score is reset to 0."
+            self.score = 0
+        self._saveUsrProf()
+        return mssg
+
+    def _calcXP(self):
+        if self.level == self.nLevels - 1:
+            return self.XP_DISTRIBUTION[-1 if self.score >= self.SCORE_TO_ADVANCE else -2]
+        return self.XP_DISTRIBUTION[min(self.level, len(self.XP_DISTRIBUTION)-2)]
+
+    def _saveUsrProf(self):
+        self.usrProf[self.name]["level"] = self.level
+        self.usrProf[self.name]["score"] = self.score
+        self.usrProf.addXP(self._calcXP())
+        self.usrProf.dump()
 
 
 class Addition(ExerciseBase):

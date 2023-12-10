@@ -1,4 +1,3 @@
-import sys
 import shortcuts
 
 
@@ -12,20 +11,13 @@ class ListMenu:
             "Please select an item from the following list.",
             *shortcuts.getShortcuts(),
             "",
-            "\n".join("%d.: %s" % (i + 1, e) for i, e in enumerate(self.items)),
+            "\n".join("%d: %s" % (i + 1, e) for i, e in enumerate(self.items)),
             sep="\n",
         )
         while True:
             inp = input(">>> ")
             shortcut = shortcuts.parseShortcuts(inp)
-            if shortcut == shortcuts.EXIT_APP:
-                print("Exit the app!")
-                sys.exit()
-            elif shortcut == shortcuts.RESTART:
-                print("Cannot restart, this is a menu!")
-            elif shortcut == shortcuts.CHECK_SCORE:
-                print("Check XP score is not ready yet.")
-            elif shortcut == shortcuts.GO_BACK:
+            if shortcut in (shortcuts.GO_BACK, shortcuts.CHECK_SCORE):
                 return shortcut
             elif shortcut is not None:
                 print("Unknown shortcuts", shortcut)
@@ -38,7 +30,7 @@ class ListMenu:
                 ))
 
     def getItem(self, i):
-        if i < 0 or i > len(self.items):
+        if i is None or i < 0 or i > len(self.items):
             print("Warning: invalid call to ListMenu.getItem with i = %d", i)
             return None
         return self.items[i-1]
