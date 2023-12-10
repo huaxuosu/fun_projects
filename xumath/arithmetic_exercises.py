@@ -21,15 +21,11 @@ class ExerciseBase:
 
     @classmethod
     def validateAnswer(cls, q, a):
-        if not ExerciseBase.isInteger(a):
-            return -1
-        return 0 if int(a) == eval(q) else 1
+        if a.isdigit() or (a.startswith("-") and a[1:].isdigit()):
+            return 0 if int(a) == eval(q) else 1
+        return -1
 
-    @staticmethod
-    def isInteger(s):
-        return s[1:].isdigit() if s.startswith("-") else s.isdigit()
-
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.nLevels = 4
         self.score = 0
         self.level = 0
@@ -53,8 +49,12 @@ class ExerciseBase:
     def generateExercise(self):
         raise NotImplementedError
 
-    def __repr__(self):
+    @property
+    def name(self):
         return self.__class__.__name__
+
+    def __repr__(self):
+        return self.name
 
     def main(self):
         print(
@@ -134,8 +134,8 @@ class Subtraction(ExerciseBase):
 
 
 class Multiplication(ExerciseBase):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.nLevels = 5
 
     def generateExercise(self):
@@ -151,8 +151,8 @@ class Multiplication(ExerciseBase):
 
 
 class Division(ExerciseBase):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.nLevels = 5
 
     def generateExercise(self):
