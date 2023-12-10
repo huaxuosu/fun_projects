@@ -7,10 +7,10 @@ CHECK_SCORE = 1_000_003
 shortcuts = {
     # ctrl + B
     2: (GO_BACK, "Ctrl + B to go back to the precious menu."),
-    # ctrl + D
-    4: (EXIT_APP, "Ctrl + D to exit."),
-    # ctrl + S
-    19: (CHECK_SCORE, "Ctrl + S to check your score.")
+    # ctrl + E
+    5: (EXIT_APP, "Ctrl + E to exit."),
+    # ctrl + A
+    1: (CHECK_SCORE, "Ctrl + A to check your score.")
 }
 
 
