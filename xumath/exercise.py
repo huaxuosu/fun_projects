@@ -66,10 +66,10 @@ class ExerciseBase:
             sep="\n",
         )
         while True:
-            t = self.generateExercise()
+            q = self.generateExercise()
             print(
                 "Please answer the following question (%s)." % self.__class__.ANSWER_FORMAT,
-                t,
+                q,
                 sep="\n",
             )
             nAttempts = 0
@@ -89,7 +89,7 @@ class ExerciseBase:
                 elif shortcut is not None:
                     print("Unknown shortcuts", shortcut)
                 else:
-                    code = self.__class__.validateAnswer(t, inp)
+                    code = self.__class__.validateAnswer(q, inp)
                     if code == -1:
                         print("Invalid input, the answer needs to be {}, please try again.".format(
                             self.__class__.ANSWER_FORMAT,
