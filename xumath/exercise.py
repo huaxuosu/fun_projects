@@ -20,10 +20,10 @@ class ExerciseBase:
     MAX_N_ATTEMPTS = 2
 
     @classmethod
-    def validateAnswer(cls, t, a):
+    def validateAnswer(cls, q, a):
         if not ExerciseBase.isInteger(a):
             return -1
-        return 0 if int(a) == eval(t) else 1
+        return 0 if int(a) == eval(q) else 1
 
     @staticmethod
     def isInteger(s):
