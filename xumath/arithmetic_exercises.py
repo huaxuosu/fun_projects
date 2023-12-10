@@ -74,6 +74,7 @@ class ExerciseBase:
             "#################%s##" % ("#" * len(self.__repr__())),
             "# Let's practice %s #" % self.__repr__(),
             "#################%s##" % ("#" * len(self.__repr__())),
+            self.usrProf.getStreakXPInfo(),
             self._getScoreInfo(),
             "Answer format: %s" % self.ANSWER_FORMAT,
             "",
@@ -95,7 +96,7 @@ class ExerciseBase:
                 if shortcut == shortcuts.GO_BACK:
                     return
                 elif shortcut == shortcuts.CHECK_SCORE:
-                    print(self._getScoreInfo())
+                    print(self.usrProf.getStreakXPInfo(), self._getScoreInfo(), sep="\n")
                 elif shortcut is not None:
                     print("Unknown shortcuts", shortcut)
                 else:
