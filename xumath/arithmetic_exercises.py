@@ -69,11 +69,14 @@ class ExerciseBase:
         return self.name
 
     def main(self):
+        """
+        Main for loop to generate the exercises and score them
+        """
         print(
             "",
-            "#################%s##" % ("#" * len(self.__repr__())),
-            "# Let's practice %s #" % self.__repr__(),
-            "#################%s##" % ("#" * len(self.__repr__())),
+            "#################%s##" % ("#" * len(self.name)),
+            "# Let's practice %s #" % self.name,
+            "#################%s##" % ("#" * len(self.name)),
             self.usrProf.getStreakXPInfo(),
             self._getScoreInfo(),
             "Answer format: %s" % self.ANSWER_FORMAT,
