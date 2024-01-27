@@ -10,7 +10,7 @@ import os.path
 import shortcuts
 from user_profile import UserProfile
 import menus
-from arithmetic_exercises import (
+from ex_simple_op import (
     Addition,
     Subtraction,
     Multiplication,
