@@ -38,6 +38,7 @@ def main():
     # user profile
     usrProfFile = os.path.join(os.path.dirname(sys.argv[0]), __user__ + ".prf")
     usrProf = UserProfile(usrProfFile)
+    print(usrProf.data)
     print(usrProf.getStreakXPInfo())
     mainMenu = menus.ListMenu(
         Addition(usrProf),

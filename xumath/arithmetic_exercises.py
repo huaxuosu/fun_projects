@@ -28,7 +28,7 @@ class ExerciseBase:
     MAX_N_ATTEMPTS = 2
     # [xp for 1st level, xp for 2nd level, xp for 3rd level,
     #  xp for 4th level or higher,
-    #  xp for highest level when score > promotion score]
+    #  xp for highest level when score > SCORE_TO_ADVANCE]
     XP_DISTRIBUTION = [5, 10, 10, 20, 40]
 
     @classmethod

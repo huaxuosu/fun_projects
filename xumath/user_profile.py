@@ -4,6 +4,14 @@ import datetime
 
 
 class UserProfile:
+    """
+    UserProfile: a dict
+        - exercise name: a dict
+            - level: int
+            - score: int
+        - xp: int
+        - streak: Streak
+    """
     pickleProtocol = 5
 
     def __init__(self, f):
@@ -47,9 +55,16 @@ class UserProfile:
 
 class Streak:
     """
+    Streak
+        - lastActive: datetime when last time using xumath
+        - freeze: int
+        - lastMiss: datetime when last time missing xumath
+        - streakDays: int
+
     If you miss a day in 30 days, you still keep your streak.
     Otherwise, streak will be reset to 0
     """
+
     def __init__(self):
         self.lastActive = datetime.date(2000, 1, 1)
         self.freeze = 0
