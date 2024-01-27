@@ -26,6 +26,9 @@ class ExerciseBase:
     MAX_SCORE = 100
     INIT_SCORE_AF_DEMOTION = 2
     MAX_N_ATTEMPTS = 2
+    # [xp for 1st level, xp for 2nd level, xp for 3rd level,
+    #  xp for 4th level or higher,
+    #  xp for highest level when score > promotion score]
     XP_DISTRIBUTION = [5, 10, 10, 20, 40]
 
     @classmethod
@@ -128,6 +131,7 @@ class ExerciseBase:
     def _getScoreInfo(self):
         return "{}: level {}/{}, score {}/{}".format(
             self.name,
+            # level starts at 0 in data, but it starts at 1 in display
             self.level + 1,
             self.nLevels,
             self.score,
