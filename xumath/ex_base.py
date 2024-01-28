@@ -21,9 +21,13 @@ class ExerciseBase:
     """
 
     ANSWER_FORMAT = "integer number"
+    # if SCORE_TO_ADVANCE number of questions are correct, advance to next level
     SCORE_TO_ADVANCE = 5
+    # MAX_SCORE is the highest score (i.e. # of qs correct) for the highest level
     MAX_SCORE = 100
+    # your score for the level starts at 0.  If you are demoted to the level, the score starts at 2
     INIT_SCORE_AF_DEMOTION = 2
+    # you can fail up to 1 times without score reduction
     MAX_N_ATTEMPTS = 2
     # [xp for 1st level, xp for 2nd level, xp for 3rd level,
     #  xp for 4th level or higher,

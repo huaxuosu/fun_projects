@@ -6,6 +6,7 @@ from ex_base import ExerciseBase
 class ExSimpleOpBase(ExerciseBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.nLevels = 4
 
     def generateExercise(self):
         raise NotImplementedError
