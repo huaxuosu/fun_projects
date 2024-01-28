@@ -30,10 +30,6 @@ class ExerciseBase:
     #  xp for highest level when score > SCORE_TO_ADVANCE]
     XP_DISTRIBUTION = [5, 10, 10, 20, 40]
 
-    @classmethod
-    def validateAnswer(cls, q, a):
-        raise NotImplementedError
-
     def __init__(self, usrProf: UserProfile):
         self.usrProf = usrProf
         assert(isinstance(self.usrProf, UserProfile))
@@ -43,6 +39,9 @@ class ExerciseBase:
         self.score = exerciseData.setdefault("score", 0)
 
     def generateExercise(self):
+        raise NotImplementedError
+
+    def validateAnswer(self, q, a):
         raise NotImplementedError
 
     @property

@@ -4,14 +4,13 @@ from ex_base import ExerciseBase
 
 
 class ExSimpleOpBase(ExerciseBase):
-    @classmethod
-    def validateAnswer(cls, q, a):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def validateAnswer(self, q, a):
         if a.isdigit() or (a.startswith("-") and a[1:].isdigit()):
             return 0 if int(a) == eval(q) else 1
         return -1
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
     def generateTwoOperands(self, n1Ranges=None, n2Ranges=None):
         n1Ranges = n1Ranges or [
