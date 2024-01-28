@@ -1,4 +1,3 @@
-import random
 # internal modules
 import shortcuts
 from user_profile import UserProfile
@@ -33,9 +32,7 @@ class ExerciseBase:
 
     @classmethod
     def validateAnswer(cls, q, a):
-        if a.isdigit() or (a.startswith("-") and a[1:].isdigit()):
-            return 0 if int(a) == eval(q) else 1
-        return -1
+        raise NotImplementedError
 
     def __init__(self, usrProf: UserProfile):
         self.usrProf = usrProf
@@ -44,22 +41,6 @@ class ExerciseBase:
         exerciseData = self.usrProf.setdefault(self.name, {})
         self.level = exerciseData.setdefault("level", 0)
         self.score = exerciseData.setdefault("score", 0)
-
-    def generateTwoOperands(self, n1Ranges=None, n2Ranges=None):
-        n1Ranges = n1Ranges or [
-            [1, 1, 10, 100],
-            [9, 9, 99, 999_999],
-        ]
-        n2Ranges = n2Ranges or [
-            [1, 10, 10, 100],
-            [9, 99, 99, 999_999],
-        ]
-        assert(len(n1Ranges) == len(n2Ranges) == 2)
-        assert(len(n1Ranges[0]) == len(n1Ranges[1]) == self.nLevels)
-        assert(len(n2Ranges[0]) == len(n2Ranges[1]) == self.nLevels)
-        n1 = random.randint(n1Ranges[0][self.level], n1Ranges[1][self.level])
-        n2 = random.randint(n2Ranges[0][self.level], n2Ranges[1][self.level])
-        return n1, n2
 
     def generateExercise(self):
         raise NotImplementedError
