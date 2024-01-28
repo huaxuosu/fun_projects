@@ -6,6 +6,7 @@ Created on Sat Dec  9 13:50:54 2023
 
 import sys
 import os.path
+import random
 # internal modules
 import shortcuts
 from user_profile import UserProfile
@@ -16,6 +17,7 @@ from ex_simple_op import (
     Multiplication,
     Division,
 )
+from ex_complex_op import FourOperations
 
 __version__ = "v0.0.2"
 __user__ = "hanyong"
@@ -45,8 +47,10 @@ def main():
         Subtraction(usrProf),
         Multiplication(usrProf),
         Division(usrProf),
+        FourOperations(usrProf),
     )
 
+    random.seed()
     while True:
         choice = mainMenu.selectFromMenu()
         if choice == shortcuts.GO_BACK:
