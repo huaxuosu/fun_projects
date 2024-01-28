@@ -7,6 +7,9 @@ class ExSimpleOpBase(ExerciseBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def generateExercise(self):
+        raise NotImplementedError
+
     def validateAnswer(self, q, a):
         if a.isdigit() or (a.startswith("-") and a[1:].isdigit()):
             return 0 if int(a) == eval(q) else 1
