@@ -9,7 +9,7 @@ from tools_int_gen import (
     applyNegationToVal,
     genEqFromOps,
 )
-from tools_int import gcd
+from algo.ints import gcd
 
 
 class FourOperations(ExerciseBase):

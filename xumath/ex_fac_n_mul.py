@@ -13,13 +13,15 @@ class Factors(ExerciseBase):
     6. mixed
     """
 
-    @classmethod
-    def validateAnswer(cls, q, a):
-        pass
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.nLevels = 6
+
+    def generateExercise(self):
+        pass
+
+    def validateAnswer(self, q, a):
+        pass
 
 
 class Multiples(ExerciseBase):
@@ -32,10 +34,12 @@ class Multiples(ExerciseBase):
     5. mixed
     """
 
-    @classmethod
-    def validateAnswer(cls, q, a):
-        pass
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.nLevels = 5
+
+    def generateExercise(self):
+        pass
+
+    def validateAnswer(self, q, a):
+        pass
