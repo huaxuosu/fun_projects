@@ -3,7 +3,7 @@ import operator
 import random
 # internal modules
 from ex_base import ExerciseBase
-from tools_int_gen import (
+from tools.int_gen import (
     genRandIntByRandOfNDigs,
     genRandIntLsByRandOfNDigs,
     applyNegationToVal,

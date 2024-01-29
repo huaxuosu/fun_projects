@@ -1,6 +1,6 @@
 import random
 # internal modules
-from tools_common import zipTwoLists
+from .common import zipTwoLists
 
 
 def genRandIntByNDigs(minNDigs, maxNDigs=None):
