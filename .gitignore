@@ -5,5 +5,5 @@
 *.pyc
 
 # ignore ALL files in xumath\__pycache__ 
-xumath/__pycache__/
+*/__pycache__/*
 
