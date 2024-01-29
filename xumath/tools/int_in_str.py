@@ -1,4 +1,5 @@
 import random
+import re
 # internal modules
 from .common import zipTwoLists
 
@@ -65,3 +66,7 @@ def genEqFromOps(operands, operators, applyNegation=False):
     if applyNegation:
         operands = applyNegationToVals(operands)
     return " ".join(map(str, zipTwoLists(operands, operators)))
+
+
+def extractAllIntsFrom(s: str):
+    return list(map(int, re.findall(r"\-{0,1}\d+", s)))

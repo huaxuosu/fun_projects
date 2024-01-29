@@ -1,3 +1,8 @@
+import collections
+# internal modules
+from .primes import primeFactorization
+
+
 def gcd(*args):
     """
     GCD of a list of numbers
@@ -38,3 +43,30 @@ def lcm(*args):
     for i in range(1, n):
         ret = __lcmBinary(ret, args[i])
     return ret
+
+
+def findAllFactors(n, lb=1, ub=None):
+    """
+    find all factors of n (sorted), including 1 and itself
+    """
+    assert(n > 1)
+    ub = ub or n
+    pfs = primeFactorization(n)
+    cnts = collections.Counter(pfs)
+    pLs = list(cnts.keys())
+    k = len(pLs)
+    ret = []
+
+    def __helper(i=0, prod=1):
+        if i == k:
+            ret.append(prod)
+            return
+        p = pLs[i]
+        for m in range(cnts[p]+1):
+            f = p**m
+            prod *= f
+            __helper(i+1, prod)
+            prod //= f
+
+    __helper()
+    return sorted(e for e in ret if lb <= e <= ub)

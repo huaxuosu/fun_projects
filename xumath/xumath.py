@@ -18,6 +18,7 @@ from ex_simple_op import (
     Division,
 )
 from ex_complex_op import FourOperations
+from ex_fac_n_mul import Factors
 
 __version__ = "v0.0.2"
 __user__ = "hanyong"
@@ -48,6 +49,7 @@ def main():
         Multiplication(usrProf),
         Division(usrProf),
         FourOperations(usrProf),
+        Factors(usrProf),
     )
 
     random.seed()
