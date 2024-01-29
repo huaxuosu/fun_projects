@@ -1,3 +1,5 @@
+import functools
+import operator
 import random
 # internal modules
 from ex_base import ExerciseBase
@@ -7,7 +9,7 @@ from tools_int_gen import (
     applyNegationToVal,
     genEqFromOps,
 )
-from tools_int import lcm
+from tools_int import gcd
 
 
 class FourOperations(ExerciseBase):
@@ -54,14 +56,20 @@ class FourOperations(ExerciseBase):
     def _genMulDivGrp(nOperands=2):
         operators = [random.choice(["*", "/"]) for _ in range(nOperands - 1)]
         operands = [genRandIntByRandOfNDigs(2, 3)]
+        dividends = [operands[0]]
         divisors = []
         for e in operators:
             v = genRandIntByRandOfNDigs(1, 2)
             if e == "/":
                 divisors.append(v)
+            else:
+                dividends.append(v)
             operands.append(v)
         if divisors:
-            operands[0] = lcm(operands[0], *divisors)
+            prodOfDividends = functools.reduce(operator.mul, dividends)
+            prodOfDivisors = functools.reduce(operator.mul, divisors)
+            operands[0] *= prodOfDivisors // gcd(prodOfDividends, prodOfDivisors)
+            print(dividends, divisors)
         return genEqFromOps(operands, operators, applyNegation=True)
 
     def validateAnswer(self, q, a):
