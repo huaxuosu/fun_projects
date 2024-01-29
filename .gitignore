@@ -1,14 +1,7 @@
 # ignore ALL .prf files
 *.prf
 
-# ignore ALL .pyc files
-*.pyc
-
-# ignore ALL files in xumath\__pycache__ 
-*/__pycache__/*
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
