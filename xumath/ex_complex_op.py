@@ -69,7 +69,6 @@ class FourOperations(ExerciseBase):
             prodOfDividends = functools.reduce(operator.mul, dividends)
             prodOfDivisors = functools.reduce(operator.mul, divisors)
             operands[0] *= prodOfDivisors // gcd(prodOfDividends, prodOfDivisors)
-            print(dividends, divisors)
         return genEqFromOps(operands, operators, applyNegation=True)
 
     def validateAnswer(self, q, a):
