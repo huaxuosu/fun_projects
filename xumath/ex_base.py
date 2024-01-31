@@ -1,5 +1,9 @@
 # internal modules
-import shortcuts
+# import os, sys
+#
+# from os.path import dirname, join, abspath
+# sys.path.insert(0, abspath(join(dirname(__file__), '..')))
+from ui import shortcuts
 from user_profile import UserProfile
 
 

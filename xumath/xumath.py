@@ -8,9 +8,8 @@ import sys
 import os.path
 import random
 # internal modules
-import shortcuts
 from user_profile import UserProfile
-import menus
+from ui import menus, shortcuts
 from ex_simple_op import (
     Addition,
     Subtraction,

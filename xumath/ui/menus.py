@@ -1,4 +1,4 @@
-import shortcuts
+from . import shortcuts
 
 
 class ListMenu:
