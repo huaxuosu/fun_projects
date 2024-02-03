@@ -1,16 +1,17 @@
 import random
 # internal modules
-from ex_base import ExerciseBase
+from algo.math.ints import findAllFactors, gcd
 from algo.math.primes import (
     primeFactorization,
     IntWSmallPrimeFactors,
 )
+from algo.rand.gen_ints import genRandIntLsByNDigs
 from algo.ex_validate_int import (
     extractAllIntsFrom,
     parseCommaSepInts,
     areSameIntLs,
 )
-from algo.math.ints import findAllFactors
+from ex_base import ExerciseBase
 
 
 class Factors(ExerciseBase):
@@ -24,6 +25,9 @@ class Factors(ExerciseBase):
     6. mixed
     """
     ANSWER_FORMAT = "integer numbers separated by ,"
+    Q_HEAD_PF = "Prime factorization"
+    Q_HEAD_FAF = "Find all factors"
+    Q_HEAD_GCD = "Find GCD"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -37,7 +41,7 @@ class Factors(ExerciseBase):
             n = self.intWSmallPrimeFacsGen.genInt(4, 1000)
             if self.level == 0:
                 # level 1
-                return "Prime factorization of %d" % n
+                return "%s of %d" % (Factors.Q_HEAD_PF, n)
             # level 2
             facs = findAllFactors(n)
             nFacs = len(facs)
@@ -45,23 +49,28 @@ class Factors(ExerciseBase):
             i = random.randint(1, nFacs-k-1)
             lb = max((facs[i-1] + facs[i]) // 2, 2)
             ub = min((facs[i+k-1] + facs[i+k]) // 2, n-1)
-            return "Find all factors of %d between %d and %d" % (n, lb, ub)
-        elif self.level == 2:
-            # level 3
-            pass
+            return "%s of %d between %d and %d" % (Factors.Q_HEAD_FAF, n, lb, ub)
+        elif self.level <= 3:
+            # levels 3 and 4
+            operands = genRandIntLsByNDigs(
+                n=random.randint(3, 4) if self.level == 3 else 2,
+                minNDigs=2,
+                maxNDigs=4)
+            return "%s of %s" % (Factors.Q_HEAD_GCD, ", ".join(map(str, operands)))
         else:
             pass
 
     def validateAnswer(self, q, a):
-        if self.level < 2:
-            aInInts = parseCommaSepInts(a)
-            if aInInts is None:
-                return -1
-            qNums = extractAllIntsFrom(q)
-            if self.level == 0:
-                return 0 if areSameIntLs(aInInts, primeFactorization(qNums[0])) else 1
-            else:
-                return 0 if areSameIntLs(aInInts, findAllFactors(*qNums)) else 1
+        aInInts = parseCommaSepInts(a)
+        if aInInts is None:
+            return -1
+        qNums = extractAllIntsFrom(q)
+        if q.startswith(Factors.Q_HEAD_PF):
+            return 0 if areSameIntLs(aInInts, primeFactorization(qNums[0])) else 1
+        elif q.startswith(Factors.Q_HEAD_FAF):
+            return 0 if areSameIntLs(aInInts, findAllFactors(*qNums)) else 1
+        elif q.startswith(Factors.Q_HEAD_GCD):
+            return 0 if aInInts[0] == gcd(*qNums) else 1
         else:
             pass
 

@@ -1,13 +1,11 @@
-import functools
-import operator
 import random
 # internal modules
-from algo.math.ints import gcd
 from algo.rand.gen_ints import genRandIntByRandOfNDigs, genRandIntLsByRandOfNDigs
 from algo.ex_gen_base import (
     applyNegationToVal,
     genExFromOps,
 )
+from algo.ex_gen_int import ExGrpForMulDivGen
 from algo.ex_validate_int import evalSimpleEq
 from ex_base import ExerciseBase
 
@@ -23,53 +21,45 @@ class FourOperations(ExerciseBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.nLevels = 4
+        # exercise generator for mul and div
+        # first operand has [2, 3] number of digits
+        # all other operands have [1, 2] number of digits
+        self.mulDivGrpGen = ExGrpForMulDivGen([2, 3], [1, 2])
 
     def generateExercise(self):
         if self.level == 0:
             # level 1
-            nOperands = random.randint(2, 4)
-            operands = genRandIntLsByRandOfNDigs(nOperands, 3, 6)
-            return self._genAddSubEq(operands, applyNegation=True)
+            operands = genRandIntLsByRandOfNDigs(
+                n=random.randint(2, 4),
+                minNDigs=3,
+                maxNDigs=6,
+            )
+            return genExFromOps(
+                operands,
+                operators=["+", "-"],
+                applyNegation=True,
+                shuffleOperatorsWReplacement=True,
+            )
         elif self.level == 1:
             # level 2
-            return self._genMulDivGrp(random.randint(2, 4))
+            return self.mulDivGrpGen.genEx(nOperands=random.randint(2, 4))
         else:
             # level 3 or up
             nGrps = 2 if self.level == 2 else 4
-            isSingleVal = [1]*2 + [random.choice([0, 1]), 0][:nGrps-2]
-            random.shuffle(isSingleVal)
+            isMulDivGrp = [1] * 2 + [random.choice([0, 1]), 0][:nGrps - 2]
+            random.shuffle(isMulDivGrp)
             grps = [
-                self._genMulDivGrp(random.randint(2, 4))
-                if isSingleVal[i] == 1
+                self.mulDivGrpGen.genEx(nOperands=random.randint(2, 4))
+                if isMulDivGrp[i] == 1
                 else applyNegationToVal(genRandIntByRandOfNDigs(3, 6))
                 for i in range(nGrps)
             ]
-            return self._genAddSubEq(grps, applyNegation=False)
-
-    @staticmethod
-    def _genAddSubEq(operands, applyNegation=False):
-        nOperands = len(operands)
-        operators = [random.choice(["+", "-"]) for _ in range(nOperands - 1)]
-        return genExFromOps(operands, operators, applyNegation=applyNegation)
-
-    @staticmethod
-    def _genMulDivGrp(nOperands=2):
-        operators = [random.choice(["*", "/"]) for _ in range(nOperands - 1)]
-        operands = [genRandIntByRandOfNDigs(2, 3)]
-        dividends = [operands[0]]
-        divisors = []
-        for e in operators:
-            v = genRandIntByRandOfNDigs(1, 2)
-            if e == "/":
-                divisors.append(v)
-            else:
-                dividends.append(v)
-            operands.append(v)
-        if divisors:
-            prodOfDividends = functools.reduce(operator.mul, dividends)
-            prodOfDivisors = functools.reduce(operator.mul, divisors)
-            operands[0] *= prodOfDivisors // gcd(prodOfDividends, prodOfDivisors)
-        return genExFromOps(operands, operators, applyNegation=True)
+            return genExFromOps(
+                grps,
+                operators=["+", "-"],
+                applyNegation=False,
+                shuffleOperatorsWReplacement=True,
+            )
 
     def validateAnswer(self, q, a):
         return evalSimpleEq(q, a)

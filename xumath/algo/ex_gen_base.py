@@ -18,7 +18,11 @@ def applyNegationToVals(vals):
     return list(map(applyNegationToVal, vals))
 
 
-def genExFromOps(operands, operators, applyNegation=False, shuffleOperatorsWReplacement=False):
+def genExFromOps(
+        operands,
+        operators,
+        applyNegation=False,
+        shuffleOperatorsWReplacement=False):
     """
     Generate the equation from the operands and operators
     """

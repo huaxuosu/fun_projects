@@ -12,7 +12,7 @@ def extractAllIntsFrom(s: str):
 
 def parseCommaSepInts(s: str):
     aInLs = s.replace(",", " ").split()
-    return list(map(int, aInLs)) if all(map(str.isdigit, aInLs)) else None
+    return list(map(int, aInLs)) if aInLs and all(map(str.isdigit, aInLs)) else None
 
 
 def areSameIntLs(l1: list, l2: list):
