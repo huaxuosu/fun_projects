@@ -1,9 +1,18 @@
+import inspect
+# internal modules
 from . import shortcuts
 
 
 class ListMenu:
-    def __init__(self, *items):
-        self.items = items
+    def __init__(self, *items, baseClass=None):
+        """
+        items: menu items in class or an instance
+        baseClass: menu items have to be its subclass or instance
+        """
+        if baseClass is not None:
+            if not all((inspect.isclass(e) and issubclass or isinstance)(e, baseClass) for e in items):
+                raise Exception("items have to be a subclass or instance of", baseClass)
+        self.items = [e() if inspect.isclass(e) else e for e in items]
 
     def selectFromMenu(self):
         print(

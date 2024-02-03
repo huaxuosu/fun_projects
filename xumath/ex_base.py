@@ -44,7 +44,7 @@ class ExerciseBase:
     ###
     # class vars
     ###
-    __usrProf = None
+    __USR_PROF = None
 
     @classmethod
     def initUsrProf(cls, usrProf: UserProfile):
@@ -52,13 +52,13 @@ class ExerciseBase:
         initialize the class with user profile data
         """
         assert(isinstance(usrProf, UserProfile))
-        cls.__usrProf = usrProf
+        cls.__USR_PROF = usrProf
 
     def __init__(self, *args, **kwargs):
-        if self.__usrProf is None:
+        if self.__USR_PROF is None:
             raise Exception("You have to call ExerciseBase.initUsrProf before calling its constructor.")
         self.nLevels = 4
-        exerciseData = self.__usrProf.setdefault(self.name, {})
+        exerciseData = self.__USR_PROF.setdefault(self.name, {})
         self.level = exerciseData.setdefault("level", 0)
         self.score = exerciseData.setdefault("score", 0)
 
@@ -84,7 +84,7 @@ class ExerciseBase:
             "#################%s##" % ("#" * len(self.name)),
             "# Let's practice %s #" % self.name,
             "#################%s##" % ("#" * len(self.name)),
-            self.__usrProf.getStreakXPInfo(),
+            self.__USR_PROF.getStreakXPInfo(),
             self._getScoreInfo(),
             "Answer format: %s" % self.ANSWER_FORMAT,
             "",
@@ -106,7 +106,7 @@ class ExerciseBase:
                 if shortcut == shortcuts.GO_BACK:
                     return
                 elif shortcut == shortcuts.CHECK_SCORE:
-                    print(self.__usrProf.getStreakXPInfo(), self._getScoreInfo(), sep="\n")
+                    print(self.__USR_PROF.getStreakXPInfo(), self._getScoreInfo(), sep="\n")
                 elif shortcut is not None:
                     print("Unknown shortcuts", shortcut)
                 else:
@@ -147,7 +147,7 @@ class ExerciseBase:
         if not demote:
             # scored a question
             # calculate XP
-            self.__usrProf.addXP(self._calcXP())
+            self.__USR_PROF.addXP(self._calcXP())
             # add 1 to score
             self.score += 1
             if self.level == self.nLevels - 1 and self.score == self.MAX_SCORE:
@@ -177,6 +177,6 @@ class ExerciseBase:
         return self.XP_DISTRIBUTION[min(self.level, len(self.XP_DISTRIBUTION)-2)]
 
     def _saveUsrProf(self):
-        self.__usrProf[self.name]["level"] = self.level
-        self.__usrProf[self.name]["score"] = self.score
-        self.__usrProf.dump()
+        self.__USR_PROF[self.name]["level"] = self.level
+        self.__USR_PROF[self.name]["score"] = self.score
+        self.__USR_PROF.dump()

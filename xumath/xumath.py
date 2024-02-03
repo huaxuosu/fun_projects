@@ -44,12 +44,13 @@ def main():
     print(usrProf.getStreakXPInfo())
     ExerciseBase.initUsrProf(usrProf)
     mainMenu = menus.ListMenu(
-        Addition(),
-        Subtraction(),
-        Multiplication(),
-        Division(),
-        FourOperations(),
-        Factors(),
+        Addition,
+        Subtraction,
+        Multiplication,
+        Division,
+        FourOperations,
+        Factors,
+        baseClass=ExerciseBase,
     )
 
     random.seed()
