@@ -44,7 +44,7 @@ def main():
     usrProfFile = os.path.join(os.path.dirname(sys.argv[0]), __user__ + ".prf")
     usrProf = UserProfile(usrProfFile)
     print(usrProf.getStreakXPInfo())
-    ExerciseBase.initUsrProf(usrProf)
+    ExerciseBase.init(usrProf)
     mainMenu = menus.ListMenu(
         Addition,
         Subtraction,

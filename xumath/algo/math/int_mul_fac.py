@@ -18,6 +18,7 @@ def gcd(*args):
             return a
         return gcd(a, b % a)
 
+    assert(all(e > 0 for e in args))
     n = len(args)
     assert(n > 1)
     ret = args[0]

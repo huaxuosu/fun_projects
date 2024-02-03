@@ -48,7 +48,7 @@ class ExerciseBase:
     __USR_PROF = None
 
     @classmethod
-    def initUsrProf(cls, usrProf: UserProfile):
+    def init(cls, usrProf: UserProfile):
         """
         initialize the class with user profile data
         """
@@ -57,7 +57,7 @@ class ExerciseBase:
 
     def __init__(self, *args, **kwargs):
         if self.__USR_PROF is None:
-            raise Exception("You have to call ExerciseBase.initUsrProf before calling its constructor.")
+            raise Exception("You have to call ExerciseBase.init before calling its constructor.")
         self.nLevels = 4
         exerciseData = self.__USR_PROF.setdefault(self.name, {})
         self.level = exerciseData.setdefault("level", 0)
