@@ -33,7 +33,7 @@ class Factors(ExerciseBase):
 
     def generateExercise(self):
         if self.level < 2:
-            # generate int with up to 4 prime factors < 20 and up to 1,000
+            # generate int with up to 4 prime factors and up to 1,000
             n = self.intWSmallPrimeFacsGen.genInt(4, 1000)
             if self.level == 0:
                 # level 1

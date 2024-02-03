@@ -2,14 +2,14 @@ import functools
 import operator
 import random
 # internal modules
-from ex_base import ExerciseBase
-from algo.tools.int_in_str import (
-    applyNegationToVal,
-    genEqFromOps,
-)
-from algo.rand.gen_ints import genRandIntByRandOfNDigs, genRandIntLsByRandOfNDigs
 from algo.math.ints import gcd
+from algo.rand.gen_ints import genRandIntByRandOfNDigs, genRandIntLsByRandOfNDigs
+from algo.ex_gen_base import (
+    applyNegationToVal,
+    genExFromOps,
+)
 from algo.ex_validate_int import evalSimpleEq
+from ex_base import ExerciseBase
 
 
 class FourOperations(ExerciseBase):
@@ -50,7 +50,7 @@ class FourOperations(ExerciseBase):
     def _genAddSubEq(operands, applyNegation=False):
         nOperands = len(operands)
         operators = [random.choice(["+", "-"]) for _ in range(nOperands - 1)]
-        return genEqFromOps(operands, operators, applyNegation=applyNegation)
+        return genExFromOps(operands, operators, applyNegation=applyNegation)
 
     @staticmethod
     def _genMulDivGrp(nOperands=2):
@@ -69,7 +69,7 @@ class FourOperations(ExerciseBase):
             prodOfDividends = functools.reduce(operator.mul, dividends)
             prodOfDivisors = functools.reduce(operator.mul, divisors)
             operands[0] *= prodOfDivisors // gcd(prodOfDividends, prodOfDivisors)
-        return genEqFromOps(operands, operators, applyNegation=True)
+        return genExFromOps(operands, operators, applyNegation=True)
 
     def validateAnswer(self, q, a):
         return evalSimpleEq(q, a)
