@@ -26,25 +26,6 @@ def gcd(*args):
     return ret
 
 
-def lcm(*args):
-    """
-    LCM of a list of numbers
-    """
-
-    def __lcmBinary(a, b):
-        """
-        LCM of a and b
-        """
-        return a * b // gcd(a, b)
-
-    n = len(args)
-    assert(n > 1)
-    ret = args[0]
-    for i in range(1, n):
-        ret = __lcmBinary(ret, args[i])
-    return ret
-
-
 def findAllFactors(n, lb=1, ub=None):
     """
     find all factors of n (sorted), including 1 and itself
@@ -74,3 +55,32 @@ def findAllFactors(n, lb=1, ub=None):
 
 def findAllCommonFactors(vals, lb=1, ub=None):
     return findAllFactors(gcd(*vals), lb, ub)
+
+
+def lcm(*args):
+    """
+    LCM of a list of numbers
+    """
+
+    def __lcmBinary(a, b):
+        """
+        LCM of a and b
+        """
+        return a * b // gcd(a, b)
+
+    n = len(args)
+    assert(n > 1)
+    ret = args[0]
+    for i in range(1, n):
+        ret = __lcmBinary(ret, args[i])
+    return ret
+
+
+def findMultiplesInRange(n, lb, ub):
+    i0 = (lb + n - 1) // n
+    ix = ub // n + 1
+    return [n*i for i in range(i0, ix)]
+
+
+def findCommonMultiplesInRange(vals, lb, ub):
+    return findMultiplesInRange(lcm(*vals), lb, ub)

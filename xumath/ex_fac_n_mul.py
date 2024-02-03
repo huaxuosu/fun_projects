@@ -1,10 +1,17 @@
 import random
 # internal modules
-from algo.math.int_gen import genRandIntLsByNDigs, genRandIntLsWithRandomGcd
+from algo.math.int_gen import (
+    genRandIntByNDigs,
+    genRandIntLsByNDigs,
+    genRandIntLsWithRandomGcd,
+)
 from algo.math.int_mul_fac import (
     gcd,
+    lcm,
     findAllFactors,
     findAllCommonFactors,
+    findMultiplesInRange,
+    findCommonMultiplesInRange,
 )
 from algo.math.int_primes import (
     primeFactorization,
@@ -18,7 +25,22 @@ from algo.ex_validate_int import (
 from ex_base import ExerciseBase
 
 
-class Factors(ExerciseBase):
+class ExFacMulBase(ExerciseBase):
+    ANSWER_FORMAT = "integer numbers separated by ,"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # generate int with small primes < 20
+        self.intWSmallPrimeFacsGen = IntWSmallPrimeFactors(20)
+
+    def generateExercise(self):
+        raise NotImplementedError
+
+    def validateAnswer(self, q, a):
+        raise NotImplementedError
+
+
+class Factors(ExFacMulBase):
     """
     Levels
     1. prime factorization (simple, up to 4 primes < 20, up to 1000)
@@ -27,7 +49,6 @@ class Factors(ExerciseBase):
     4. GCD 2
     5. common factors in a range
     """
-    ANSWER_FORMAT = "integer numbers separated by ,"
     Q_HEAD_PF = "Prime factorization"
     Q_HEAD_FAF = "Find all factors"
     Q_HEAD_GCD = "Find GCD"
@@ -36,8 +57,6 @@ class Factors(ExerciseBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.nLevels = 5
-        # generate int with small primes < 20
-        self.intWSmallPrimeFacsGen = IntWSmallPrimeFactors(20)
 
     def generateExercise(self):
         if self.level < 2:
@@ -109,7 +128,7 @@ class Factors(ExerciseBase):
             raise Exception("Unknown error!")
 
 
-class Multiples(ExerciseBase):
+class Multiples(ExFacMulBase):
     """
     Levels
     1. multiples in a range (simple)
@@ -117,13 +136,71 @@ class Multiples(ExerciseBase):
     3. LCM 2
     4. common multiples in a range
     """
+    Q_HEAD_FAM = "Find all multiples"
+    Q_HEAD_LCM = "Find LCM"
+    Q_HEAD_FACM = "Find all common multiples"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.nLevels = 4
 
     def generateExercise(self):
-        pass
+        if self.level == 0:
+            # level 1
+            return self.__genExFam()
+        elif self.level < 3:
+            # levels 2 and 3
+            return self.__genExLcm()
+        else:
+            # level 4
+            return self.__genExFacf()
+
+    @staticmethod
+    def __calcExFamParams(n):
+        k = random.randint(1, 3)
+        i = genRandIntByNDigs(1, 2)
+        lb = n*i - n//2
+        ub = n*(i+k-1) + n//2
+        return lb, ub
+
+    def __genExFam(self):
+        n = self.intWSmallPrimeFacsGen.genInt(maxNumPrimeFactors=4, maxVal=200)
+        lb, ub = self.__calcExFamParams(n)
+        return "%s of %d between %d and %d" % (Multiples.Q_HEAD_FAM, n, lb, ub)
+
+    def __genExLcm(self):
+        nOperands = random.randint(3, 4) if self.level == 2 else 2
+        # vals and fac is their GCD
+        vals, _ = genRandIntLsWithRandomGcd(
+            n=nOperands,
+            intWSmallPrimeFacsGen=self.intWSmallPrimeFacsGen,
+            maxNumPrimeFactorsOfGac=3,
+            maxGcd=200,
+        )
+        return "%s of %s" % (Multiples.Q_HEAD_LCM, ", ".join(map(str, vals)))
+
+    def __genExFacf(self):
+        # vals and fac is their GCD
+        vals, _ = genRandIntLsWithRandomGcd(
+            n=2,
+            intWSmallPrimeFacsGen=self.intWSmallPrimeFacsGen,
+            maxNumPrimeFactorsOfGac=2,
+            maxGcd=100,
+        )
+        lb, ub = self.__calcExFamParams(lcm(*vals))
+        vals = ", ".join(map(str, vals))
+        return "%s of %s between %d and %d" % (Multiples.Q_HEAD_FACM, vals, lb, ub)
 
     def validateAnswer(self, q, a):
-        pass
+        aInInts = parseCommaSepInts(a)
+        if aInInts is None:
+            return -1
+        qNums = extractAllIntsFrom(q)
+        if q.startswith(Multiples.Q_HEAD_FAM):
+            return 0 if set(aInInts) == set(findMultiplesInRange(*qNums)) else 1
+        elif q.startswith(Multiples.Q_HEAD_LCM):
+            return 0 if aInInts[0] == lcm(*qNums) else 1
+        elif q.startswith(Multiples.Q_HEAD_FACM):
+            return 0 if set(aInInts) == set(findCommonMultiplesInRange(qNums[:-2], *qNums[-2:])) else 1
+        else:
+            raise Exception("Unknown error!")

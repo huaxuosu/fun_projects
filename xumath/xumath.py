@@ -18,7 +18,10 @@ from ex_simple_op import (
     Division,
 )
 from ex_complex_op import FourOperations
-from ex_fac_n_mul import Factors
+from ex_fac_n_mul import (
+    Factors,
+    Multiples,
+)
 
 __version__ = "v0.0.2"
 __user__ = "hanyong"
@@ -50,6 +53,7 @@ def main():
         Division,
         FourOperations,
         Factors,
+        Multiples,
         baseClass=ExerciseBase,
     )
 
