@@ -70,9 +70,12 @@ class IntWSmallPrimeFactors:
         assert(n <= len(self.primes))
         return random.sample(self.primes, n)
 
+
 # import functools
 # import operator
 # import numpy as np
+
+
 """
 def findPrimesFast(n):
     if n < 2:

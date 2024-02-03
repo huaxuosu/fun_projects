@@ -8,6 +8,7 @@ import sys
 import os.path
 import random
 # internal modules
+from algo.tools.str_fmt import framedStr
 from ui import menus, shortcuts
 from user_profile import UserProfile
 from ex_base import ExerciseBase
@@ -29,9 +30,7 @@ __user__ = "hanyong"
 
 def main():
     print(
-        "###########",
-        "# XU MATH #",
-        "###########",
+        framedStr("XU MATH"),
         "Version: %s" % __version__,
         "",
         "Hello Hanyong!",

@@ -3,6 +3,7 @@
 #
 # from os.path import dirname, join, abspath
 # sys.path.insert(0, abspath(join(dirname(__file__), '..')))
+from algo.tools.str_fmt import framedStr
 from ui import shortcuts
 from user_profile import UserProfile
 
@@ -81,9 +82,7 @@ class ExerciseBase:
         """
         print(
             "",
-            "#################%s##" % ("#" * len(self.name)),
-            "# Let's practice %s #" % self.name,
-            "#################%s##" % ("#" * len(self.name)),
+            framedStr("Let's practice " + self.name),
             self.__USR_PROF.getStreakXPInfo(),
             self._getScoreInfo(),
             "Answer format: %s" % self.ANSWER_FORMAT,
