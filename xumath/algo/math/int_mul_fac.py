@@ -70,3 +70,7 @@ def findAllFactors(n, lb=1, ub=None):
 
     __helper()
     return sorted(e for e in ret if lb <= e <= ub)
+
+
+def findAllCommonFactors(vals, lb=1, ub=None):
+    return findAllFactors(gcd(*vals), lb, ub)

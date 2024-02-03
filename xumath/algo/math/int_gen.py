@@ -1,6 +1,7 @@
 import random
+import math
 # internal modules
-from .int_primes import isPrime
+from .int_primes import isPrime, IntWSmallPrimeFactors
 
 
 def genRandIntByNDigs(minNDigs, maxNDigs=None, nonPrime=False, baseFac=1):
@@ -54,3 +55,15 @@ def genRandIntLsByRandOfNDigs(n, minNDigs, maxNDigs=None, nonPrime=False, baseFa
     baseFac: return a number that is a multiple of baseFac
     """
     return [genRandIntByRandOfNDigs(minNDigs, maxNDigs, nonPrime, baseFac) for _ in range(n)]
+
+
+def genRandIntLsWithRandomGcd(
+        n,
+        intWSmallPrimeFacsGen: IntWSmallPrimeFactors,
+        maxNumPrimeFactorsOfGac,
+        maxGcd=math.inf):
+    """
+    returns the values and their GCD
+    """
+    fac = intWSmallPrimeFacsGen.genInt(maxNumPrimeFactorsOfGac, maxGcd)
+    return [e*fac for e in intWSmallPrimeFacsGen.genPrimes(n)], fac

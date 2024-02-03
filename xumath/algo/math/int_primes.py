@@ -64,6 +64,11 @@ class IntWSmallPrimeFactors:
             n *= p
         return n
 
+    def genPrimes(self, n, withReplacement=False):
+        if withReplacement:
+            return [random.choice(self.primes) for _ in range(n)]
+        assert(n <= len(self.primes))
+        return random.sample(self.primes, n)
 
 # import functools
 # import operator

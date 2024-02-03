@@ -113,7 +113,7 @@ class ExerciseBase:
                     err = self.validateAnswer(q, inp)
                     if err == 0:
                         print("\nGreat job!\n")
-                        mssg = self._addScore()
+                        mssg = self.__addScore()
                         if mssg:
                             print(mssg)
                         break
@@ -124,7 +124,7 @@ class ExerciseBase:
                     elif err == 1:
                         nAttempts += 1
                         if nAttempts >= self.MAX_N_ATTEMPTS:
-                            mssg = self._addScore(demote=True)
+                            mssg = self.__addScore(demote=True)
                             print("Incorrect answer. %s" % mssg)
                             break
                         else:
@@ -142,12 +142,12 @@ class ExerciseBase:
             self.SCORE_TO_ADVANCE if self.level < self.nLevels-1 else self.MAX_SCORE,
         )
 
-    def _addScore(self, demote=False):
+    def __addScore(self, demote=False):
         mssg = None
         if not demote:
             # scored a question
             # calculate XP
-            self.__USR_PROF.addXP(self._calcXP())
+            self.__USR_PROF.addXP(self.__calcXP())
             # add 1 to score
             self.score += 1
             if self.level == self.nLevels - 1 and self.score == self.MAX_SCORE:
@@ -168,15 +168,15 @@ class ExerciseBase:
         else:
             mssg = "Your level score is reset to 0."
             self.score = 0
-        self._saveUsrProf()
+        self.__saveUsrProf()
         return mssg
 
-    def _calcXP(self):
+    def __calcXP(self):
         if self.level == self.nLevels - 1:
             return self.XP_DISTRIBUTION[-1 if self.score >= self.SCORE_TO_ADVANCE else -2]
         return self.XP_DISTRIBUTION[min(self.level, len(self.XP_DISTRIBUTION)-2)]
 
-    def _saveUsrProf(self):
+    def __saveUsrProf(self):
         self.__USR_PROF[self.name]["level"] = self.level
         self.__USR_PROF[self.name]["score"] = self.score
         self.__USR_PROF.dump()

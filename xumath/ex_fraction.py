@@ -13,8 +13,10 @@ class Fractions(ExerciseBase):
     6. mixed
     """
 
-    @classmethod
-    def validateAnswer(cls, q, a):
+    def validateAnswer(self, q, a):
+        pass
+
+    def generateExercise(self):
         pass
 
     def __init__(self, *args, **kwargs):
