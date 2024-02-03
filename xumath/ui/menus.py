@@ -10,7 +10,7 @@ class ListMenu:
         baseClass: menu items have to be its subclass or instance
         """
         if baseClass is not None:
-            if not all((inspect.isclass(e) and issubclass or isinstance)(e, baseClass) for e in items):
+            if not all((issubclass if inspect.isclass(e) else isinstance)(e, baseClass) for e in items):
                 raise Exception("items have to be a subclass or instance of", baseClass)
         self.items = [e() if inspect.isclass(e) else e for e in items]
 
@@ -40,6 +40,5 @@ class ListMenu:
 
     def getItem(self, i):
         if i is None or i < 0 or i > len(self.items):
-            print("Warning: invalid call to ListMenu.getItem with i = %d", i)
-            return None
+            raise Exception("Warning: invalid call to ListMenu.getItem with i = %d" % i)
         return self.items[i-1]

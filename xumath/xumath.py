@@ -62,9 +62,7 @@ def main():
         elif choice == shortcuts.CHECK_SCORE:
             print(usrProf.getStreakXPInfo())
         else:
-            ex = mainMenu.getItem(choice)
-            if ex is not None:
-                ex.main()
+            mainMenu.getItem(choice).main()
 
 
 if __name__ == "__main__":
