@@ -51,7 +51,7 @@ class IntWSmallPrimeFactors:
         # primes before maxFac
         self.primes = findPrimes(maxFac)
 
-    def genInt(self, maxNumPrimeFactors, maxVal):
+    def genInt(self, maxNumPrimeFactors, maxVal=math.inf):
         """
         generate an int with up to maxNumPrimeFactors prime factors
         and <= maxVal

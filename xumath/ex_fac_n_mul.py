@@ -55,7 +55,10 @@ class Factors(ExerciseBase):
             operands = genRandIntLsByNDigs(
                 n=random.randint(3, 4) if self.level == 3 else 2,
                 minNDigs=2,
-                maxNDigs=4)
+                maxNDigs=4,
+                nonPrime=True,
+                baseFac=self.intWSmallPrimeFacsGen.genInt(1) if random.choice([0, 1]) == 1 else 1,
+            )
             return "%s of %s" % (Factors.Q_HEAD_GCD, ", ".join(map(str, operands)))
         else:
             pass
