@@ -1,14 +1,16 @@
 import random
-import collections
 # internal modules
 from ex_base import ExerciseBase
-from algo.primes import (
-    isPrime,
-    findPrimes,
+from algo.math.primes import (
     primeFactorization,
+    IntWSmallPrimeFactors,
 )
-from tools.int_in_str import extractAllIntsFrom
-from algo.ints import findAllFactors
+from algo.ex_validate_int import (
+    extractAllIntsFrom,
+    parseCommaSepInts,
+    areSameIntLs,
+)
+from algo.math.ints import findAllFactors
 
 
 class Factors(ExerciseBase):
@@ -26,12 +28,13 @@ class Factors(ExerciseBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.nLevels = 6
-        # primes before 30
-        self.primesBf30 = findPrimes(20)
+        # generate int with small primes < 20
+        self.intWSmallPrimeFacsGen = IntWSmallPrimeFactors(20)
 
     def generateExercise(self):
-        if self.level <= 1:
-            n = self._genSmallNumForFactorization()
+        if self.level < 2:
+            # generate int with up to 4 prime factors < 20 and up to 1,000
+            n = self.intWSmallPrimeFacsGen.genInt(4, 1000)
             if self.level == 0:
                 # level 1
                 return "Prime factorization of %d" % n
@@ -49,27 +52,16 @@ class Factors(ExerciseBase):
         else:
             pass
 
-    def _genSmallNumForFactorization(self):
-        n = 1
-        for _ in range(4):
-            p = random.choice(self.primesBf30)
-            if n * p >= 1000 and not isPrime(n):
-                break
-            n *= p
-        return n
-
     def validateAnswer(self, q, a):
         if self.level < 2:
-            aInLs = a.replace(",", " ").split()
-            if not all(map(str.isdigit, aInLs)):
+            aInInts = parseCommaSepInts(a)
+            if aInInts is None:
                 return -1
-            aInCnts = collections.Counter(map(int, aInLs))
             qNums = extractAllIntsFrom(q)
             if self.level == 0:
-                return 0 if aInCnts == collections.Counter(primeFactorization(qNums[0])) else 1
+                return 0 if areSameIntLs(aInInts, primeFactorization(qNums[0])) else 1
             else:
-                facsInRange = findAllFactors(*qNums)
-                return 0 if aInCnts == collections.Counter(facsInRange) else 1
+                return 0 if areSameIntLs(aInInts, findAllFactors(*qNums)) else 1
         else:
             pass
 

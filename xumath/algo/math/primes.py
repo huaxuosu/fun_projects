@@ -1,4 +1,5 @@
 import math
+import random
 # import functools
 # import operator
 # import numpy as np
@@ -39,6 +40,32 @@ def primeFactorization(n):
                 ans.append(n)
             break
     return ans
+
+
+class IntWSmallPrimeFactors:
+    """
+    This class generates an int with only small prime factors
+    """
+    def __init__(self, maxFac: int):
+        """
+        maxFac: biggest prime factor
+        if maxFax is not prime, the nearest left prime will be used
+        """
+        # primes before maxFac
+        self.primes = findPrimes(maxFac)
+
+    def genInt(self, maxNumPrimeFactors, maxVal):
+        """
+        generate an int with up to maxNumPrimeFactors prime factors
+        and <= maxVal
+        """
+        n = 1
+        for _ in range(maxNumPrimeFactors):
+            p = random.choice(self.primes)
+            if n * p > maxVal and not isPrime(n):
+                break
+            n *= p
+        return n
 
 
 """

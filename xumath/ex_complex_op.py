@@ -3,13 +3,13 @@ import operator
 import random
 # internal modules
 from ex_base import ExerciseBase
-from tools.int_in_str import (
-    genRandIntByRandOfNDigs,
-    genRandIntLsByRandOfNDigs,
+from algo.tools.int_in_str import (
     applyNegationToVal,
     genEqFromOps,
 )
-from algo.ints import gcd
+from algo.rand.gen_ints import genRandIntByRandOfNDigs, genRandIntLsByRandOfNDigs
+from algo.math.ints import gcd
+from algo.ex_validate_int import evalSimpleEq
 
 
 class FourOperations(ExerciseBase):
@@ -72,6 +72,4 @@ class FourOperations(ExerciseBase):
         return genEqFromOps(operands, operators, applyNegation=True)
 
     def validateAnswer(self, q, a):
-        if a.isdigit() or (a.startswith("-") and a[1:].isdigit()):
-            return 0 if int(a) == round(eval(q)) else 1
-        return -1
+        return evalSimpleEq(q, a)
