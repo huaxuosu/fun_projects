@@ -8,8 +8,9 @@ import sys
 import os.path
 import random
 # internal modules
-from user_profile import UserProfile
 from ui import menus, shortcuts
+from user_profile import UserProfile
+from ex_base import ExerciseBase
 from ex_simple_op import (
     Addition,
     Subtraction,
@@ -40,15 +41,15 @@ def main():
     # user profile
     usrProfFile = os.path.join(os.path.dirname(sys.argv[0]), __user__ + ".prf")
     usrProf = UserProfile(usrProfFile)
-    print(usrProf.data)
     print(usrProf.getStreakXPInfo())
+    ExerciseBase.initUsrProf(usrProf)
     mainMenu = menus.ListMenu(
-        Addition(usrProf),
-        Subtraction(usrProf),
-        Multiplication(usrProf),
-        Division(usrProf),
-        FourOperations(usrProf),
-        Factors(usrProf),
+        Addition(),
+        Subtraction(),
+        Multiplication(),
+        Division(),
+        FourOperations(),
+        Factors(),
     )
 
     random.seed()

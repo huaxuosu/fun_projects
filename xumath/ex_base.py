@@ -24,6 +24,9 @@ class ExerciseBase:
         }
     """
 
+    ###
+    # constants
+    ###
     ANSWER_FORMAT = "integer number"
     # if SCORE_TO_ADVANCE number of questions are correct, advance to next level
     SCORE_TO_ADVANCE = 5
@@ -38,11 +41,24 @@ class ExerciseBase:
     #  xp for highest level when score > SCORE_TO_ADVANCE]
     XP_DISTRIBUTION = [5, 10, 10, 20, 40]
 
-    def __init__(self, usrProf: UserProfile):
-        self.usrProf = usrProf
-        assert(isinstance(self.usrProf, UserProfile))
+    ###
+    # class vars
+    ###
+    __usrProf = None
+
+    @classmethod
+    def initUsrProf(cls, usrProf: UserProfile):
+        """
+        initialize the class with user profile data
+        """
+        assert(isinstance(usrProf, UserProfile))
+        cls.__usrProf = usrProf
+
+    def __init__(self, *args, **kwargs):
+        if self.__usrProf is None:
+            raise Exception("You have to call ExerciseBase.initUsrProf before calling its constructor.")
         self.nLevels = 4
-        exerciseData = self.usrProf.setdefault(self.name, {})
+        exerciseData = self.__usrProf.setdefault(self.name, {})
         self.level = exerciseData.setdefault("level", 0)
         self.score = exerciseData.setdefault("score", 0)
 
@@ -68,7 +84,7 @@ class ExerciseBase:
             "#################%s##" % ("#" * len(self.name)),
             "# Let's practice %s #" % self.name,
             "#################%s##" % ("#" * len(self.name)),
-            self.usrProf.getStreakXPInfo(),
+            self.__usrProf.getStreakXPInfo(),
             self._getScoreInfo(),
             "Answer format: %s" % self.ANSWER_FORMAT,
             "",
@@ -90,7 +106,7 @@ class ExerciseBase:
                 if shortcut == shortcuts.GO_BACK:
                     return
                 elif shortcut == shortcuts.CHECK_SCORE:
-                    print(self.usrProf.getStreakXPInfo(), self._getScoreInfo(), sep="\n")
+                    print(self.__usrProf.getStreakXPInfo(), self._getScoreInfo(), sep="\n")
                 elif shortcut is not None:
                     print("Unknown shortcuts", shortcut)
                 else:
@@ -131,7 +147,7 @@ class ExerciseBase:
         if not demote:
             # scored a question
             # calculate XP
-            self.usrProf.addXP(self._calcXP())
+            self.__usrProf.addXP(self._calcXP())
             # add 1 to score
             self.score += 1
             if self.level == self.nLevels - 1 and self.score == self.MAX_SCORE:
@@ -161,6 +177,6 @@ class ExerciseBase:
         return self.XP_DISTRIBUTION[min(self.level, len(self.XP_DISTRIBUTION)-2)]
 
     def _saveUsrProf(self):
-        self.usrProf[self.name]["level"] = self.level
-        self.usrProf[self.name]["score"] = self.score
-        self.usrProf.dump()
+        self.__usrProf[self.name]["level"] = self.level
+        self.__usrProf[self.name]["score"] = self.score
+        self.__usrProf.dump()

@@ -3,11 +3,11 @@ import collections
 
 
 def isInt(s: str):
-    return bool(re.search(r"^[+-]{0,1}\d+$", s))
+    return bool(re.search(r"^[+-]?\d+$", s))
 
 
 def extractAllIntsFrom(s: str):
-    return list(map(int, re.findall(r"[+-]{0,1}\d+", s)))
+    return list(map(int, re.findall(r"[+-]?\d+", s)))
 
 
 def parseCommaSepInts(s: str):

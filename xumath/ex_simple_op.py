@@ -1,7 +1,7 @@
 # internal modules
-from ex_base import ExerciseBase
-from algo.ex_validate_int import evalSimpleEq
 from algo.ex_gen_int import genExForOneBinaryOp
+from algo.ex_validate_int import evalSimpleEq
+from ex_base import ExerciseBase
 
 
 class ExSimpleOpBase(ExerciseBase):

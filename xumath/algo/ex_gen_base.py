@@ -22,9 +22,10 @@ def genExFromOps(operands, operators, applyNegation=False, shuffleOperatorsWRepl
     """
     Generate the equation from the operands and operators
     """
+    nOperands = len(operands)
     if shuffleOperatorsWReplacement:
-        operators = [random.choice(operators) for _ in range(len(operands) - 1)]
-    assert(len(operands) - len(operands) == 1)
+        operators = [random.choice(operators) for _ in range(nOperands - 1)]
+    assert(len(operators) == nOperands - 1)
     if applyNegation:
         operands = applyNegationToVals(operands)
     return " ".join(map(str, zipTwoLists(operands, operators)))

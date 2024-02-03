@@ -1,8 +1,5 @@
 import math
 import random
-# import functools
-# import operator
-# import numpy as np
 
 
 def findPrimes(n):
@@ -68,6 +65,9 @@ class IntWSmallPrimeFactors:
         return n
 
 
+# import functools
+# import operator
+# import numpy as np
 """
 def findPrimesFast(n):
     if n < 2:
