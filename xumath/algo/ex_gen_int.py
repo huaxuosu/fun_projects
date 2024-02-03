@@ -2,8 +2,8 @@ import random
 import functools
 import operator
 # internal modules
+from .math.int_gen import genRandIntByRandOfNDigs
 from .math.int_mul_fac import gcd
-from .rand.gen_ints import genRandIntByRandOfNDigs
 from .ex_gen_base import genExFromOps
 
 

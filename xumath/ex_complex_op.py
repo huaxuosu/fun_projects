@@ -1,6 +1,9 @@
 import random
 # internal modules
-from algo.rand.gen_ints import genRandIntByRandOfNDigs, genRandIntLsByRandOfNDigs
+from algo.math.int_gen import (
+    genRandIntByRandOfNDigs,
+    genRandIntLsByRandOfNDigs,
+)
 from algo.ex_gen_base import (
     applyNegationToVal,
     genExFromOps,

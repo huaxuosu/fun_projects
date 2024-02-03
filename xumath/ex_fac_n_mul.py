@@ -1,11 +1,11 @@
 import random
 # internal modules
+from algo.math.int_gen import genRandIntLsByNDigs
 from algo.math.int_mul_fac import findAllFactors, gcd
 from algo.math.int_primes import (
     primeFactorization,
     IntWSmallPrimeFactors,
 )
-from algo.rand.gen_ints import genRandIntLsByNDigs
 from algo.ex_validate_int import (
     extractAllIntsFrom,
     parseCommaSepInts,
