@@ -1,6 +1,6 @@
 import collections
 # internal modules
-from .primes import primeFactorization
+from .int_primes import primeFactorization
 
 
 def gcd(*args):

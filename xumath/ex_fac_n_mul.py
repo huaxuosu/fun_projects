@@ -1,7 +1,7 @@
 import random
 # internal modules
-from algo.math.ints import findAllFactors, gcd
-from algo.math.primes import (
+from algo.math.int_mul_fac import findAllFactors, gcd
+from algo.math.int_primes import (
     primeFactorization,
     IntWSmallPrimeFactors,
 )
