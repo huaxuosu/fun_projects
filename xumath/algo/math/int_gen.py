@@ -2,6 +2,7 @@ import random
 import math
 # internal modules
 from .int_primes import isPrime, IntWSmallPrimeFactors
+from .int_mul_fac import gcd
 
 
 def genRandIntByNDigs(minNDigs, maxNDigs=None, nonPrime=False, baseFac=1):
@@ -67,3 +68,25 @@ def genRandIntLsWithRandomGcd(
     """
     fac = intWSmallPrimeFacsGen.genInt(maxNumPrimeFactorsOfGac, maxGcd)
     return [e*fac for e in intWSmallPrimeFacsGen.genPrimes(n)], fac
+
+
+def genMulDivOps(nOperands, n1NDigRange, n2NDigRange):
+    """
+    generate a series of operations of mul or div
+        it is guaranteed that the division is a clean one
+    n1NDigRange: # of digits range for the first operand
+    n2NDigRange: # of digits range for all other operands
+    """
+    operators = [random.choice(["*", "/"]) for _ in range(nOperands - 1)]
+    operands = [genRandIntByRandOfNDigs(*n1NDigRange)]
+    prodOfDividends = operands[0]
+    prodOfDivisors = 1
+    for e in operators:
+        v = genRandIntByRandOfNDigs(*n2NDigRange)
+        if e == "/":
+            prodOfDivisors *= v
+        else:
+            prodOfDividends *= v
+        operands.append(v)
+    operands[0] *= prodOfDivisors // gcd(prodOfDividends, prodOfDivisors)
+    return operands, operators

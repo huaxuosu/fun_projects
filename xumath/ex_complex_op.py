@@ -3,13 +3,10 @@ import random
 from algo.math.int_gen import (
     genRandIntByRandOfNDigs,
     genRandIntLsByRandOfNDigs,
+    genMulDivOps,
 )
-from algo.ex_gen_base import (
-    applyNegationToVal,
-    genExFromOps,
-)
-from algo.ex_gen_int import ExGrpForMulDivGen
-from algo.ex_validate_int import evalSimpleEq
+from algo.math.expressions import Expression
+from algo.tools.common import isInt
 from ex_base import ExerciseBase
 
 
@@ -24,10 +21,7 @@ class FourOperations(ExerciseBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.nLevels = 4
-        # exercise generator for mul and div
-        # first operand has [2, 3] number of digits
-        # all other operands have [1, 2] number of digits
-        self.mulDivGrpGen = ExGrpForMulDivGen([2, 3], [1, 2])
+        self.exp = None
 
     def generateExercise(self):
         if self.level == 0:
@@ -37,32 +31,50 @@ class FourOperations(ExerciseBase):
                 minNDigs=3,
                 maxNDigs=6,
             )
-            return genExFromOps(
+            self.exp = Expression(
                 operands,
                 operators=["+", "-"],
-                applyNegation=True,
+                applyRandomNegation=True,
                 shuffleOperatorsWReplacement=True,
             )
         elif self.level == 1:
             # level 2
-            return self.mulDivGrpGen.genEx(nOperands=random.randint(2, 4))
+            self.exp = self.__createMulDivExp()
         else:
             # level 3 or up
             nGrps = 2 if self.level == 2 else 4
             isMulDivGrp = [1] * 2 + [random.choice([0, 1]), 0][:nGrps - 2]
             random.shuffle(isMulDivGrp)
             grps = [
-                self.mulDivGrpGen.genEx(nOperands=random.randint(2, 4))
+                self.__createMulDivExp()
                 if isMulDivGrp[i] == 1
-                else applyNegationToVal(genRandIntByRandOfNDigs(3, 6))
+                else genRandIntByRandOfNDigs(3, 6)
                 for i in range(nGrps)
             ]
-            return genExFromOps(
+            self.exp = Expression(
                 grps,
                 operators=["+", "-"],
-                applyNegation=False,
+                applyRandomNegation=True,
                 shuffleOperatorsWReplacement=True,
             )
+        return str(self.exp)
+
+    @staticmethod
+    def __createMulDivExp():
+        """
+        generate expression for mul and div
+        first operand has [2, 3] number of digits
+        all other operands have [1, 2] number of digits
+        """
+        nOperands = random.randint(2, 4)
+        operands, operators = genMulDivOps(nOperands, [2, 3], [1, 2])
+        return Expression(
+            operands,
+            operators,
+            applyRandomNegation=True
+        )
 
     def validateAnswer(self, q, a):
-        return evalSimpleEq(q, a)
+        if isInt(a):
+            return 0 if int(a) == round(self.exp.eval()) else 1
+        return -1
