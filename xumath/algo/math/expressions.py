@@ -1,4 +1,5 @@
 import numbers
+import operator
 import random
 import typing
 import copy
@@ -12,14 +13,26 @@ class Expression:
     exp_1 operator_1 exp_2 operator_2 ...
     exp_i is a value or expression
     supported operators:
-        +, -, *, /, //
+        **
+        *, /, //, %
+        +, -
     """
     SUPPORTED_OPERATORS = ["**", "*", "/", "//", "%", "+", "-"]
-    OPERATOR_PRECEDENCES = {
+    OPERATORS_PRECEDENCES = {
         "**": 1,
         "*": 3, "/": 3, "//": 3, "%": 3,
         "+": 4, "-": 4,
     }
+    OPERATORS_OPERATORS = {
+        "**": operator.pow,
+        "*": operator.mul,
+        "/": operator.truediv,
+        "//": operator.floordiv,
+        "%": operator.mod,
+        "+": operator.add,
+        "-": operator.sub,
+    }
+    DEBUG = True
 
     def __init__(
             self,
@@ -34,8 +47,8 @@ class Expression:
         operators and self.__ops contain operators
             all operators are binary and should have the same precedence
         if __sign is -1, negation is applied to the expression
-        applyRandomNegation: apply by random negation to values
-        applyRandomNegationToExps: apply by random negation to expressions as well
+        applyRandomNegation: apply negation to the numbers in expsOrVals by random
+        applyRandomNegationToExps: apply negation to the expressions in expsOrVals by random as well
             it only works when applyRandomNegation = True
         """
         self.__exps = expsOrVals
@@ -67,7 +80,7 @@ class Expression:
                 self.__exps[i] = self.__exps[i].simplify()
 
         # negation
-        assert (self.__sign in (-1, 1))
+        assert self.__sign in (-1, 1)
         if self.__sign == -1 and nExps <= 1:
             self.__sign = 1
             if nExps == 1:
@@ -85,10 +98,10 @@ class Expression:
             assert all(isinstance(e, str) and e in Expression.SUPPORTED_OPERATORS for e in self.__ops)
             self.__ops = list(self.__ops)
         # all ops should have the same precedence
-        assert not self.__ops or len(set(map(Expression.OPERATOR_PRECEDENCES.get, self.__ops))) == 1
-        if nExps > 1 and shuffleOperatorsWReplacement:
+        assert not self.__ops or len(set(map(Expression.OPERATORS_PRECEDENCES.get, self.__ops))) == 1
+        if shuffleOperatorsWReplacement:
             self.__ops = [random.choice(self.__ops) for _ in range(nExps - 1)]
-        assert not self.__ops or len(self.__ops) == nExps - 1
+        assert len(self.__ops) == max(nExps - 1, 0)
 
     def applyRandomNegation(self, applyRandomNegationToExps=False):
         for i in range(len(self.__exps)):
@@ -111,7 +124,7 @@ class Expression:
             return 0
         if self.__sign == -1:
             return 2
-        return max(map(Expression.OPERATOR_PRECEDENCES.get, self.__ops))
+        return max(map(Expression.OPERATORS_PRECEDENCES.get, self.__ops))
 
     def simplify(self):
         """
@@ -131,21 +144,24 @@ class Expression:
         return self
 
     def __str__(self):
-
         def getPrecedence(x):
             return x.precedence if isinstance(x, Expression) else 0
-
         if not self.__exps:
             return ""
         s = str(self.__exps[0])
         curPrecedence = getPrecedence(self.__exps[0])
         for i, op in enumerate(self.__ops):
-            opPrecedence = Expression.OPERATOR_PRECEDENCES[op]
+            opPrecedence = Expression.OPERATORS_PRECEDENCES[op]
             if curPrecedence > opPrecedence:
                 s = "(%s)" % s
             fmt = " %s (%s)" if getPrecedence(self.__exps[i+1]) >= opPrecedence else " %s %s"
             s += fmt % (op, str(self.__exps[i+1]))
             curPrecedence = opPrecedence
+        if self.__sign == -1:
+            s = "-(%s)" % s
+        # for debug only
+        if Expression.DEBUG:
+            assert abs(eval(s) - self.eval()) < 1e-16
         return s
 
     def __repr__(self):
@@ -157,6 +173,15 @@ class Expression:
     def __neg__(self):
         assert(bool(self.__exps))
         return Expression(self.__exps, self.__ops, -self.__sign)
+
+    def eval(self):
+        def __eval(x):
+            return x.eval() if isinstance(x, Expression) else x
+        assert(bool(self.__exps))
+        ret = __eval(self.__exps[0])
+        for i, op in enumerate(self.__ops):
+            ret = Expression.OPERATORS_OPERATORS[op](ret, __eval(self.__exps[i+1]))
+        return -ret if self.__sign == -1 else ret
 
     ###
     # Binary Operators overloading
@@ -175,7 +200,7 @@ class Expression:
         assert(isinstance(op, str) and op in Expression.SUPPORTED_OPERATORS)
         if isinstance(other, numbers.Number):
             other = Expression(other)
-        if self.precedence in (0, Expression.OPERATOR_PRECEDENCES[op]):
+        if self.precedence in (0, Expression.OPERATORS_PRECEDENCES[op]):
             exps = copy.copy(self.__exps) + [other.simplify()]
             ops = copy.copy(self.__ops) + [op]
             return Expression(exps, ops)
