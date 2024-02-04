@@ -1,6 +1,7 @@
 # internal modules
-from algo.ex_gen_int import genExForOneBinaryOp
-from algo.ex_validate_int import evalSimpleEq
+from algo.math.expressions import Expression
+from algo.math.int_gen import genRandIntByRandOfNDigs
+from algo.tools.common import isInt
 from ex_base import ExerciseBase
 
 
@@ -8,31 +9,35 @@ class ExSimpleOpBase(ExerciseBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.nLevels = 4
+        # Expression
+        self.exp = None
 
     def generateExercise(self):
-        raise NotImplementedError
+        return str(self.exp)
 
-    def genExForOneBinaryOp(self, op, n1NDigRanges=None, n2NDigRanges=None):
+    def genExpForOneOp(self, op, n1NDigRanges=None, n2NDigRanges=None):
         n1NDigRanges = n1NDigRanges or [[1], [2], [2], [3, 6]]
         n2NDigRanges = n2NDigRanges or [[1], [1], [2], [3, 6]]
-        return genExForOneBinaryOp(
-            op,
-            n1NDigRanges[self.level],
-            n2NDigRanges[self.level],
-        )
+        n1 = genRandIntByRandOfNDigs(*n1NDigRanges[self.level])
+        n2 = genRandIntByRandOfNDigs(*n2NDigRanges[self.level])
+        self.exp = Expression([n1, n2], op)
 
     def validateAnswer(self, q, a):
-        return evalSimpleEq(q, a)
+        if isInt(a):
+            return 0 if int(a) == round(self.exp.eval()) else 1
+        return -1
 
 
 class Addition(ExSimpleOpBase):
     def generateExercise(self):
-        return ExSimpleOpBase.genExForOneBinaryOp(self, "+")
+        ExSimpleOpBase.genExpForOneOp(self, "+")
+        return ExSimpleOpBase.generateExercise(self)
 
 
 class Subtraction(ExSimpleOpBase):
     def generateExercise(self):
-        return ExSimpleOpBase.genExForOneBinaryOp(self, "-")
+        ExSimpleOpBase.genExpForOneOp(self, "-")
+        return ExSimpleOpBase.generateExercise(self)
 
 
 class Multiplication(ExSimpleOpBase):
@@ -43,7 +48,8 @@ class Multiplication(ExSimpleOpBase):
     def generateExercise(self):
         n1NDigRanges = [[1], [2], [3], [3], [4, 6]]
         n2NDigRanges = [[1], [1], [2], [3], [3]]
-        return ExSimpleOpBase.genExForOneBinaryOp(self, "*", n1NDigRanges, n2NDigRanges)
+        ExSimpleOpBase.genExpForOneOp(self, "*", n1NDigRanges, n2NDigRanges)
+        return ExSimpleOpBase.generateExercise(self)
 
 
 class Division(ExSimpleOpBase):
@@ -54,4 +60,5 @@ class Division(ExSimpleOpBase):
     def generateExercise(self):
         n1NDigRanges = [[1], [2], [3], [3], [4, 6]]
         n2NDigRanges = [[1], [1], [1], [2], [2, 3]]
-        return ExSimpleOpBase.genExForOneBinaryOp(self, "//", n1NDigRanges, n2NDigRanges)
+        ExSimpleOpBase.genExpForOneOp(self, "//", n1NDigRanges, n2NDigRanges)
+        return ExSimpleOpBase.generateExercise(self)
