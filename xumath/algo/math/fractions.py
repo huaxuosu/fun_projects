@@ -19,7 +19,7 @@ class Fraction:
         return isinstance(denom, int) and denom > 0
 
     def __init__(self, num=0, denom=1):
-        assert(isinstance(num, int) and Fraction.chkDenom(denom))
+        assert isinstance(num, int) and Fraction.chkDenom(denom)
         # default is an integer of 0
         self.__n = num
         self.__d = denom
@@ -45,29 +45,29 @@ class Fraction:
         if fac is None:
             fac = gcd(abs(self.__n), self.__d) if self.__n != 0 else self.__d
         else:
-            assert(Fraction.chkDenom(fac) and self.__n % fac == self.__d % fac == 0)
+            assert Fraction.chkDenom(fac) and self.__n % fac == self.__d % fac == 0
         return Fraction(self.__n//fac, self.__d//fac)
 
     def complicate(self, fac):
         """
         inverse of simplify
         """
-        assert(Fraction.chkDenom(fac))
+        assert Fraction.chkDenom(fac)
         return Fraction(self.__n*fac, self.__d*fac)
 
     def changeDenom(self, denom):
         """
         set denom to a new value
         """
-        assert(Fraction.chkDenom(denom))
+        assert Fraction.chkDenom(denom)
         if denom > self.__d:
-            assert(denom % self.__d == 0)
+            assert denom % self.__d == 0
             return self.complicate(denom // self.__d)
-        assert(self.__d % denom == 0)
+        assert self.__d % denom == 0
         return self.simplify(self.__d // denom)
 
     def isIdenticalTo(self, other):
-        assert(isinstance(other, Fraction))
+        assert isinstance(other, Fraction)
         return self.__n == other.__n and self.__d == other.__d
 
     ###
@@ -77,7 +77,8 @@ class Fraction:
         return Fraction(-self.__n, self.__d)
 
     def __add__(self, other):
-        assert (isinstance(other, Fraction))
+        if not isinstance(other, Fraction):
+            other = Fraction(other)
         # least common denom
         lcd = lcm(self.__d, other.__d)
         return Fraction(
@@ -86,7 +87,8 @@ class Fraction:
         ).simplify()
 
     def __sub__(self, other):
-        assert (isinstance(other, Fraction))
+        if not isinstance(other, Fraction):
+            other = Fraction(other)
         # least common denom
         lcd = lcm(self.__d, other.__d)
         return Fraction(
@@ -95,18 +97,26 @@ class Fraction:
         ).simplify()
 
     def __mul__(self, other):
-        assert (isinstance(other, Fraction))
+        if not isinstance(other, Fraction):
+            other = Fraction(other)
         return Fraction(
             self.__n * other.__n,
             self.__d * other.__d,
         ).simplify()
 
     def __truediv__(self, other):
-        assert (isinstance(other, Fraction))
+        if not isinstance(other, Fraction):
+            other = Fraction(other)
         return Fraction(
             self.__n * other.__d,
             self.__d * other.__n,
         ).simplify()
+
+    def __floordiv__(self, other):
+        return self.__truediv__(other)
+
+    def __mod__(self, other):
+        raise NotImplementedError
 
     def __pow__(self, p):
         return Fraction(
@@ -115,28 +125,40 @@ class Fraction:
         ).simplify()
 
     def __eq__(self, other):
-        assert(isinstance(other, Fraction))
-        return self.__n * other.__d == self.__d * other.__n
+        if isinstance(other, Fraction):
+            return self.__n * other.__d == self.__d * other.__n
+        # other could be just a number
+        return abs(self.__n/self.__d - other) < 1e-16
 
     def __ne__(self, other):
-        assert(isinstance(other, Fraction))
-        return self.__n * other.__d != self.__d * other.__n
+        if isinstance(other, Fraction):
+            return self.__n * other.__d != self.__d * other.__n
+        # other could be just a number
+        return abs(self.__n / self.__d - other) >= 1e-16
 
     def __lt__(self, other):
-        assert(isinstance(other, Fraction))
-        return self.__n * other.__d < self.__d * other.__n
+        if isinstance(other, Fraction):
+            return self.__n * other.__d < self.__d * other.__n
+        # other could be just a number
+        return self.__n / self.__d < other
 
     def __gt__(self, other):
-        assert(isinstance(other, Fraction))
-        return self.__n * other.__d > self.__d * other.__n
+        if isinstance(other, Fraction):
+            return self.__n * other.__d > self.__d * other.__n
+        # other could be just a number
+        return self.__n / self.__d > other
 
     def __le__(self, other):
-        assert(isinstance(other, Fraction))
-        return self.__n * other.__d <= self.__d * other.__n
+        if isinstance(other, Fraction):
+            return self.__n * other.__d <= self.__d * other.__n
+        # other could be just a number
+        return self.__n / self.__d <= other
 
     def __ge__(self, other):
-        assert(isinstance(other, Fraction))
-        return self.__n * other.__d >= self.__d * other.__n
+        if isinstance(other, Fraction):
+            return self.__n * other.__d >= self.__d * other.__n
+        # other could be just a number
+        return self.__n / self.__d >= other
 
 
 class FractionExpression:

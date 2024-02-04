@@ -77,4 +77,6 @@ class FourOperations(ExerciseBase):
     def validateAnswer(self, q, a):
         if isInt(a):
             return 0 if int(a) == round(self.exp.eval()) else 1
+            # the following is for debug only
+            # return 0 if round(eval(q)) == round(self.exp.eval()) else 1
         return -1

@@ -4,6 +4,9 @@ import random
 import typing
 import copy
 
+# debug mode
+EXPRESSION_DEBUG = True
+
 
 class Expression:
     """
@@ -17,6 +20,7 @@ class Expression:
         *, /, //, %
         +, -
     """
+    SUPPORTED_VAL_CLASSES = {numbers.Number}
     SUPPORTED_OPERATORS = ["**", "*", "/", "//", "%", "+", "-"]
     OPERATORS_PRECEDENCES = {
         "**": 1,
@@ -32,7 +36,63 @@ class Expression:
         "+": operator.add,
         "-": operator.sub,
     }
-    DEBUG = True
+
+    @classmethod
+    def getOpPrecedences(cls, ops):
+        if isinstance(ops, str):
+            assert ops in cls.SUPPORTED_OPERATORS
+            return cls.OPERATORS_PRECEDENCES[ops]
+        return list(map(cls.OPERATORS_PRECEDENCES.get, ops))
+
+    @classmethod
+    def getOpOps(cls, ops):
+        if isinstance(ops, str):
+            assert ops in cls.SUPPORTED_OPERATORS
+            return cls.OPERATORS_OPERATORS[ops]
+        return list(map(cls.OPERATORS_OPERATORS.get, ops))
+
+    @classmethod
+    def isSupportedValType(cls, val):
+        return any(isinstance(val, e) for e in cls.SUPPORTED_VAL_CLASSES)
+
+    @classmethod
+    def validateSingleExpOrVal(cls, expOrVal):
+        return isinstance(expOrVal, Expression) or cls.isSupportedValType(expOrVal)
+
+    @classmethod
+    def validateInpExpsOrVals(cls, expsOrVals):
+        if expsOrVals is None:
+            expsOrVals = []
+        elif cls.validateSingleExpOrVal(expsOrVals):
+            expsOrVals = [expsOrVals]
+        else:
+            # exps should be iterable and all elements be Number or Expression type
+            assert isinstance(expsOrVals, typing.Iterable) and all(map(cls.validateSingleExpOrVal, expsOrVals))
+            expsOrVals = list(expsOrVals)
+        return expsOrVals
+
+    @classmethod
+    def validateSingleOp(cls, op):
+        if isinstance(op, str):
+            assert op in cls.SUPPORTED_OPERATORS
+            return True
+        return False
+
+    @classmethod
+    def validateInpOps(cls, ops, shuffleToSize):
+        if ops is None:
+            ops = []
+        elif cls.validateSingleOp(ops):
+            ops = [ops]
+        else:
+            # ops should be a list, tuple, etc, and all ops should be supported
+            assert isinstance(ops, typing.Iterable) and all(map(cls.validateSingleOp, ops))
+            ops = list(ops)
+            # all ops should have the same precedence
+            assert len(set(cls.getOpPrecedences(ops))) <= 1
+        if shuffleToSize > -1:
+            ops = [random.choice(ops) for _ in range(shuffleToSize)]
+        return ops
 
     def __init__(
             self,
@@ -51,57 +111,22 @@ class Expression:
         applyRandomNegationToExps: apply negation to the expressions in expsOrVals by random as well
             it only works when applyRandomNegation = True
         """
-        self.__exps = expsOrVals
-        self.__ops = operators
+        self.__exps = self.__class__.validateInpExpsOrVals(expsOrVals)
+        self.__ops = self.__class__.validateInpOps(
+            operators,
+            max(len(self.__exps)-1, 0) if shuffleOperatorsWReplacement else -1,
+        )
         self.__sign = sign
 
-        # validate inputs
-        self.__validate(shuffleOperatorsWReplacement)
+        # final validate
+        assert self.__sign in (-1, 1) and len(self.__ops) == max(len(self.__exps) - 1, 0)
 
         # apply random negation if requested
         if applyRandomNegation:
             self.applyRandomNegation(applyRandomNegationToExps)
 
-    def __validate(self, shuffleOperatorsWReplacement):
-        # exps or vals
-        if self.__exps is None:
-            self.__exps = []
-        elif isinstance(self.__exps, numbers.Number):
-            self.__exps = [self.__exps]
-        else:
-            # exps should be iterable
-            assert isinstance(self.__exps, typing.Iterable)
-            # exps should be of Number or Expression type
-            assert all(isinstance(e, numbers.Number) or isinstance(e, Expression) for e in self.__exps)
-            self.__exps = list(self.__exps)
-        nExps = len(self.__exps)
-        for i in range(nExps):
-            if isinstance(self.__exps[i], Expression):
-                self.__exps[i] = self.__exps[i].simplify()
-
-        # negation
-        assert self.__sign in (-1, 1)
-        if self.__sign == -1 and nExps <= 1:
-            self.__sign = 1
-            if nExps == 1:
-                self.__exps[0] = -self.__exps[0]
-
-        # operators
-        if self.__ops is None:
-            self.__ops = []
-        elif isinstance(self.__ops, str):
-            self.__ops = [self.__ops]
-        else:
-            # ops should be a list, tuple, etc
-            assert isinstance(self.__ops, typing.Iterable)
-            # all ops should be supported
-            assert all(isinstance(e, str) and e in Expression.SUPPORTED_OPERATORS for e in self.__ops)
-            self.__ops = list(self.__ops)
-        # all ops should have the same precedence
-        assert not self.__ops or len(set(map(Expression.OPERATORS_PRECEDENCES.get, self.__ops))) == 1
-        if shuffleOperatorsWReplacement:
-            self.__ops = [random.choice(self.__ops) for _ in range(nExps - 1)]
-        assert len(self.__ops) == max(nExps - 1, 0)
+        # simplify if needed
+        self.simplify()
 
     def applyRandomNegation(self, applyRandomNegationToExps=False):
         for i in range(len(self.__exps)):
@@ -120,11 +145,12 @@ class Expression:
         if it only has *, /, //, %, its 3
         if it only has +, -, its 4
         """
+        assert bool(self.__exps)
         if not self.__ops:
             return 0
         if self.__sign == -1:
             return 2
-        return max(map(Expression.OPERATORS_PRECEDENCES.get, self.__ops))
+        return max(self.__class__.getOpPrecedences(self.__ops))
 
     def simplify(self):
         """
@@ -133,34 +159,47 @@ class Expression:
         """
         if not self.__exps:
             self.__sign = 1
-        elif not self.__ops:
+        elif self.__ops:
+            for i in range(len(self.__exps)):
+                if isinstance(self.__exps[i], Expression):
+                    self.__exps[i] = self.__exps[i].simplify()
+        else:
             if self.__sign == -1:
                 self.__exps[0] = -self.__exps[0]
                 self.__sign = 1
-            if isinstance(self.__exps[0], Expression):
-                # simplify recursively
-                return self.__exps[0].simplify()
-            return self.__exps[0]
+            exp = self.__exps[0]
+            if isinstance(exp, Expression):
+                exp = exp.simplify()
+            if isinstance(exp, Expression):
+                self.__exps, self.__ops, self.__sign = exp.__exps, exp.__ops, exp.__sign
+            else:
+                self.__exps[0] = exp
+                return exp
         return self
 
     def __str__(self):
-        def getPrecedence(x):
+
+        def __precedence(x):
             return x.precedence if isinstance(x, Expression) else 0
+
+        def __str(x):
+            return ("(%s)" if self.__class__.isSupportedValType(x) and x < 0 else "%s") % str(x)
+
         if not self.__exps:
             return ""
-        s = str(self.__exps[0])
-        curPrecedence = getPrecedence(self.__exps[0])
+        s = __str(self.__exps[0])
+        curPrecedence = __precedence(self.__exps[0])
         for i, op in enumerate(self.__ops):
-            opPrecedence = Expression.OPERATORS_PRECEDENCES[op]
+            opPrecedence = self.__class__.getOpPrecedences(op)
             if curPrecedence > opPrecedence:
                 s = "(%s)" % s
-            fmt = " %s (%s)" if getPrecedence(self.__exps[i+1]) >= opPrecedence else " %s %s"
-            s += fmt % (op, str(self.__exps[i+1]))
+            fmt = " %s (%s)" if __precedence(self.__exps[i + 1]) >= opPrecedence else " %s %s"
+            s += fmt % (op, __str(self.__exps[i+1]))
             curPrecedence = opPrecedence
         if self.__sign == -1:
             s = "-(%s)" % s
         # for debug only
-        if Expression.DEBUG:
+        if EXPRESSION_DEBUG:
             assert abs(eval(s) - self.eval()) < 1e-16
         return s
 
@@ -172,15 +211,17 @@ class Expression:
 
     def __neg__(self):
         assert(bool(self.__exps))
-        return Expression(self.__exps, self.__ops, -self.__sign)
+        return self.__class__(self.__exps, self.__ops, -self.__sign)
 
     def eval(self):
+
         def __eval(x):
             return x.eval() if isinstance(x, Expression) else x
+
         assert(bool(self.__exps))
         ret = __eval(self.__exps[0])
         for i, op in enumerate(self.__ops):
-            ret = Expression.OPERATORS_OPERATORS[op](ret, __eval(self.__exps[i+1]))
+            ret = self.__class__.getOpOps(op)(ret, __eval(self.__exps[i+1]))
         return -ret if self.__sign == -1 else ret
 
     ###
@@ -196,15 +237,15 @@ class Expression:
         new ops = ["*"]
         the resulted expression = (3 + 5) * (4 // 2)
         """
-        assert(bool(self.__exps))
-        assert(isinstance(op, str) and op in Expression.SUPPORTED_OPERATORS)
-        if isinstance(other, numbers.Number):
-            other = Expression(other)
-        if self.precedence in (0, Expression.OPERATORS_PRECEDENCES[op]):
+        assert bool(self.__exps)
+        assert self.__class__.validateSingleOp(op)
+        if self.__class__.isSupportedValType(other):
+            other = self.__class__(other)
+        if self.precedence in (0, self.__class__.getOpPrecedences(op)):
             exps = copy.copy(self.__exps) + [other.simplify()]
             ops = copy.copy(self.__ops) + [op]
-            return Expression(exps, ops)
-        return Expression([self.simplify(), other.simplify()], op)
+            return self.__class__(exps, ops)
+        return self.__class__([self.simplify(), other.simplify()], op)
 
     def __add__(self, other):
         return self.__calc(other, "+")
