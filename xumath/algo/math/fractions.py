@@ -1,3 +1,5 @@
+import re
+
 from .int_mul_fac import (
     gcd,
     lcm,
@@ -17,6 +19,23 @@ class Fraction:
     @staticmethod
     def chkDenom(denom):
         return isinstance(denom, int) and denom > 0
+
+    @classmethod
+    def fromStr(cls, s):
+        m = re.search(r"^\s*([+-]?)\s*(\d+)\s*\/\s*(\d+)$", s)
+        if m:
+            sign, num, denom = m.groups()
+            i = 0
+        else:
+            m = re.search(r"^\s*([+-]?)\s*(\d+)\s+(\d+)\s*\/\s*(\d+)$", s)
+            if not m:
+                return None
+            sign, i, num, denom = m.groups()
+        i, num, denom = map(int, (i, num, denom))
+        num += i * denom
+        if sign == "-":
+            num = -num
+        return Fraction(num, denom)
 
     def __init__(self, num=0, denom=1):
         assert isinstance(num, int) and Fraction.chkDenom(denom)
