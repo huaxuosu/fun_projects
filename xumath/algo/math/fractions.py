@@ -73,6 +73,9 @@ class Fraction:
     ###
     # Operators overloading
     ###
+    def __neg__(self):
+        return Fraction(-self.__n, self.__d)
+
     def __add__(self, other):
         assert (isinstance(other, Fraction))
         # least common denom
