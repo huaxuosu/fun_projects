@@ -84,9 +84,9 @@ def genMulDivOps(nOperands, n1NDigRange, n2NDigRange):
     for e in operators:
         v = genRandIntByRandOfNDigs(*n2NDigRange)
         if e == "/":
-            prodOfDivisors *= v
+            prodOfDivisors *= abs(v)
         else:
-            prodOfDividends *= v
+            prodOfDividends *= abs(v)
         operands.append(v)
     operands[0] *= prodOfDivisors // gcd(prodOfDividends, prodOfDivisors)
     return operands, operators
