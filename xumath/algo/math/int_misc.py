@@ -2,6 +2,10 @@ import re
 import collections
 
 
+def isInt(s: str):
+    return bool(re.search(r"^[+-]?\d+$", s))
+
+
 def extractAllIntsFrom(s: str):
     return list(map(int, re.findall(r"[+-]?\d+", s)))
 

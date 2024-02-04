@@ -5,6 +5,11 @@ from algo.math.int_gen import (
     genRandIntLsByNDigs,
     genRandIntLsWithRandomGcd,
 )
+from algo.math.int_misc import (
+    extractAllIntsFrom,
+    parseCommaSepInts,
+    areSameIntLs,
+)
 from algo.math.int_mul_fac import (
     gcd,
     lcm,
@@ -16,11 +21,6 @@ from algo.math.int_mul_fac import (
 from algo.math.int_primes import (
     primeFactorization,
     IntWSmallPrimeFactors,
-)
-from algo.ex_validate_int import (
-    extractAllIntsFrom,
-    parseCommaSepInts,
-    areSameIntLs,
 )
 from ex_base import ExerciseBase
 

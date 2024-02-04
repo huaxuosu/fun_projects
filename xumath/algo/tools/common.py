@@ -1,6 +1,5 @@
 import functools
 import operator
-import re
 
 
 def zipTwoLists(l1, l2):
@@ -9,7 +8,3 @@ def zipTwoLists(l1, l2):
     assert(len(l1) - len(l2) in [0, 1])
     m = len(l2)
     return functools.reduce(operator.add, map(list, zip(l1[:m], l2))) + l1[m:]
-
-
-def isInt(s: str):
-    return bool(re.search(r"^[+-]?\d+$", s))

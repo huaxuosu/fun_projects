@@ -1,12 +1,12 @@
 import random
 # internal modules
+from algo.math.expressions import Expression
 from algo.math.int_gen import (
     genRandIntByRandOfNDigs,
     genRandIntLsByRandOfNDigs,
     genMulDivOps,
 )
-from algo.math.expressions import Expression
-from algo.tools.common import isInt
+from algo.math.int_misc import isInt
 from ex_base import ExerciseBase
 
 
