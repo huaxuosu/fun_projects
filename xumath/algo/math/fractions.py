@@ -22,12 +22,12 @@ class Fraction:
 
     @classmethod
     def fromStr(cls, s):
-        m = re.search(r"^\s*([+-]?)\s*(\d+)\s*\/\s*(\d+)$", s)
+        m = re.search(r"^\s*([+-]?)\s*(\d+)\s*/\s*(\d+)$", s)
         if m:
             sign, num, denom = m.groups()
             i = 0
         else:
-            m = re.search(r"^\s*([+-]?)\s*(\d+)\s+(\d+)\s*\/\s*(\d+)$", s)
+            m = re.search(r"^\s*([+-]?)\s*(\d+)\s+(\d+)\s*/\s*(\d+)$", s)
             if not m:
                 return None
             sign, i, num, denom = m.groups()
