@@ -92,6 +92,12 @@ class Fraction:
         assert isinstance(other, Fraction)
         return self.__n == other.__n and self.__d == other.__d
 
+    def __str__(self):
+        return "%d / %d" % (self.__n, self.__d) if self.__d > 1 else str(self.__n)
+
+    def __repr__(self):
+        return str(self)
+
     ###
     # Operators overloading
     ###
@@ -208,19 +214,23 @@ class FractionExpressionRepr:
         -------
          denom
         """
-        assert isinstance(expOrFrac, FractionExpression) or isinstance(expOrFrac, Fraction)
         self.__up = ""
         self.__mid = ""
         self.__low = ""
+        self.reset(expOrFrac)
+
+    def reset(self, expOrFrac=None):
+        assert isinstance(expOrFrac, FractionExpression) or isinstance(expOrFrac, Fraction)
+        if expOrFrac is None:
+            self.__up = self.__mid = self.__low = ""
         if FractionExpression.isSupportedValType(expOrFrac):
-            self.fromFraction(expOrFrac)
+            self.resetByFraction(expOrFrac)
+        elif isinstance(expOrFrac, FractionExpression):
+            self.resetByExpression(expOrFrac)
         else:
-            self.fromExpression(expOrFrac)
+            raise NotImplementedError
 
-    def reset(self):
-        self.__up = self.__mid = self.__low = ""
-
-    def fromFraction(self, frac: Fraction):
+    def resetByFraction(self, frac: Fraction):
         num, denom = frac.num, frac.denom
         i = abs(num) // denom if random.random() < 0.5 else 0
         if i > 0:
@@ -236,7 +246,7 @@ class FractionExpressionRepr:
         if i and i[0] == "-":
             self.addOuterBracket()
 
-    def fromExpression(self, exp: FractionExpression):
+    def resetByExpression(self, exp: FractionExpression):
 
         def __precedence(x):
             return x.precedence if isinstance(x, Expression) else 0
@@ -244,21 +254,20 @@ class FractionExpressionRepr:
         if not exp.exps:
             self.reset()
             return
-        s = FractionExpressionRepr(exp.exps[0])
+        self.reset(exp.exps[0])
         curPrecedence = __precedence(exp.exps[0])
         for i, op in enumerate(exp.ops):
             opPrecedence = exp.__class__.getOpPrecedences(op)
             if curPrecedence > opPrecedence:
-                s.addOuterBracket()
-            s.addOpStr(op)
+                self.addOuterBracket()
+            self.addOpStr(op)
             nxtExpOrVal = FractionExpressionRepr(exp.exps[i + 1])
             if __precedence(exp.exps[i + 1]) >= opPrecedence:
                 nxtExpOrVal.addOuterBracket()
-            s.add(nxtExpOrVal)
+            self.add(nxtExpOrVal)
             curPrecedence = opPrecedence
         if exp.sign == -1:
-            s.addNegation()
-        return str(s)
+            self.addNegation()
 
     def addOuterBracket(self):
         self.__up = " " + self.__up + " "
