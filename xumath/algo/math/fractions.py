@@ -1,5 +1,8 @@
+import random
 import re
-
+# internal modules
+from .expressions import Expression
+from .int_misc import extractAllIntsFrom
 from .int_mul_fac import (
     gcd,
     lcm,
@@ -180,16 +183,118 @@ class Fraction:
         return self.__n / self.__d >= other
 
 
-class FractionExpression:
+class FractionExpression(Expression):
     """
     Math expression for fractions
-    it contains fractions and operators
-    exp_1 operator_1 exp_2 operator_2 ...
-    exp_i can be a Fraction or a FractionExpression
     """
-    def __init__(self):
-        self.__exps = []
-        self.__ops = []
+    SUPPORTED_VAL_CLASSES = {Fraction}
+    SUPPORTED_OPERATORS = ["**", "*", "/", "//", "+", "-"]
 
-    def __repr__(self):
-        pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __str__(self):
+        return str(FractionExpressionRepr(self))
+
+
+class FractionExpressionRepr:
+    """
+    A representation in strings for FractionExpression
+    """
+    def __init__(self, expOrFrac):
+        """
+        Fraction strings are represented in three rows
+         -num
+        -------
+         denom
+        """
+        assert isinstance(expOrFrac, FractionExpression) or isinstance(expOrFrac, Fraction)
+        self.__up = ""
+        self.__mid = ""
+        self.__low = ""
+        if FractionExpression.isSupportedValType(expOrFrac):
+            self.fromFraction(expOrFrac)
+        else:
+            self.fromExpression(expOrFrac)
+
+    def reset(self):
+        self.__up = self.__mid = self.__low = ""
+
+    def fromFraction(self, frac: Fraction):
+        num, denom = frac.num, frac.denom
+        i = abs(num) // denom if random.random() < 0.5 else 0
+        if i > 0:
+            num = abs(num) - i * denom
+            if num < 0:
+                i = -i
+        num, denom, i = str(num), str(denom), str(i) if i != 0 else ""
+        # len
+        k = max(len(num), len(denom))
+        self.__up = " "*(len(i)+1) + " "*((k-len(num))//2) + num + " "*((k-len(num)+1)//2 + 1)
+        self.__mid = i + "-"*(len(self.__up) - len(i))
+        self.__low = " "*(len(i)+1) + " "*((k-len(denom))//2) + denom + " "*((k-len(denom)+1)//2 + 1)
+        if i and i[0] == "-":
+            self.addOuterBracket()
+
+    def fromExpression(self, exp: FractionExpression):
+
+        def __precedence(x):
+            return x.precedence if isinstance(x, Expression) else 0
+
+        if not exp.exps:
+            self.reset()
+            return
+        s = FractionExpressionRepr(exp.exps[0])
+        curPrecedence = __precedence(exp.exps[0])
+        for i, op in enumerate(exp.ops):
+            opPrecedence = exp.__class__.getOpPrecedences(op)
+            if curPrecedence > opPrecedence:
+                s.addOuterBracket()
+            s.addOpStr(op)
+            nxtExpOrVal = FractionExpressionRepr(exp.exps[i + 1])
+            if __precedence(exp.exps[i + 1]) >= opPrecedence:
+                nxtExpOrVal.addOuterBracket()
+            s.add(nxtExpOrVal)
+            curPrecedence = opPrecedence
+        if exp.sign == -1:
+            s.addNegation()
+        return str(s)
+
+    def addOuterBracket(self):
+        self.__up = " " + self.__up + " "
+        self.__mid = "(" + self.__mid + ")"
+        self.__low = " " + self.__low + " "
+
+    def addOpStr(self, op, sep=" "):
+        self.__up += sep + " "*len(op)
+        self.__mid += sep + op
+        self.__low += sep + " "*len(op)
+
+    def add(self, other, sep=" "):
+        self.__up += sep + other.__up
+        self.__mid += sep + other.__mid
+        self.__low += sep + other.__low
+
+    def addNegation(self):
+        assert bool(self.__mid)
+        if self.__mid[0] == "(":
+            self.__up = " " + self.__up
+            self.__mid = "-" + self.__mid
+            self.__low = " " + self.__low
+            return
+
+        upNums = extractAllIntsFrom(self.__up)
+        midNums = extractAllIntsFrom(self.__mid)
+        lowNums = extractAllIntsFrom(self.__low)
+        if re.search(r"^[-\s\d]+$", self.__mid) and len(upNums) == 1 and len(lowNums) == 1:
+            assert len(midNums) <= 1
+            frac = Fraction.fromStr("%d %d/%d" % (midNums[0] if midNums else 0, upNums[0], lowNums[0]))
+            self.reset()
+            self.add(FractionExpressionRepr(frac), sep="")
+        else:
+            # we need to add brackets first
+            self.addOuterBracket()
+            self.addNegation()
+
+    def __str__(self):
+        return "\n".join((self.__up, self.__mid, self.__low))
