@@ -23,6 +23,7 @@ from ex_fac_n_mul import (
     Factors,
     Multiples,
 )
+# from ex_fraction import ExFractions
 
 __version__ = "v0.0.2"
 __user__ = "hanyong"
@@ -53,6 +54,7 @@ def main():
         FourOperations,
         Factors,
         Multiples,
+        # ExFractions,
         baseClass=ExerciseBase,
     )
 
