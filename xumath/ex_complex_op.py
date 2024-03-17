@@ -87,7 +87,6 @@ class FourOperations(ExerciseBase):
                     nv = v1 + v2 if op == "+" else v1 - v2
                     v1 += __sign(nv)*v - nv
                     operands[i] = ExpressionV2.make([v1, v2], [op])
-                    print(operands[i].treeRepr())
         return ExpressionV2.make(
             operands,
             operators,
@@ -96,8 +95,7 @@ class FourOperations(ExerciseBase):
 
     def validateAnswer(self, q, a):
         if isInt(a):
-            # return 0 if int(a) == round(self.exp.eval()) else 1
+            return 0 if int(a) == round(self.exp.eval()) else 1
             # the following is for debug only
-            print(self.exp.eval())
-            return 0 if round(eval(q)) == round(self.exp.eval()) else 1
+            # return 0 if round(eval(q)) == round(self.exp.eval()) else 1
         return -1
