@@ -1,5 +1,5 @@
 # internal modules
-from algo.math.expressions import Expression
+from algo.math.expressions_v2 import ExpressionV2
 from algo.math.int_gen import genRandIntByRandOfNDigs
 from algo.math.int_misc import isInt
 from ex_base import ExerciseBase
@@ -20,7 +20,7 @@ class ExSimpleOpBase(ExerciseBase):
         n2NDigRanges = n2NDigRanges or [[1], [1], [2], [3, 6]]
         n1 = genRandIntByRandOfNDigs(*n1NDigRanges[self.level])
         n2 = genRandIntByRandOfNDigs(*n2NDigRanges[self.level])
-        self.exp = Expression([n1, n2], op)
+        self.exp = ExpressionV2.make([n1, n2], [op])
 
     def validateAnswer(self, q, a):
         if isInt(a):

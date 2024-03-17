@@ -1,6 +1,6 @@
 import random
 # internal modules
-from algo.math.expressions import Expression
+from algo.math.expressions_v2 import ExpressionV2
 from algo.math.int_gen import (
     genRandIntByRandOfNDigs,
     genRandIntLsByRandOfNDigs,
@@ -32,9 +32,9 @@ class FourOperations(ExerciseBase):
                 minNDigs=3,
                 maxNDigs=6,
             )
-            self.exp = Expression(
+            self.exp = ExpressionV2.make(
                 operands,
-                operators=["+", "-"],
+                ["+", "-"],
                 applyRandomNegation=True,
                 shuffleOperatorsWReplacement=True,
             )
@@ -53,9 +53,9 @@ class FourOperations(ExerciseBase):
                 else genRandIntByRandOfNDigs(3, 6)
                 for i in range(nGrps)
             ]
-            self.exp = Expression(
+            self.exp = ExpressionV2.make(
                 grps,
-                operators=["+", "-"],
+                ["+", "-"],
                 applyRandomNegation=True,
                 shuffleOperatorsWReplacement=True,
             )
@@ -86,8 +86,9 @@ class FourOperations(ExerciseBase):
                     op = random.choice(["+", "-"])
                     nv = v1 + v2 if op == "+" else v1 - v2
                     v1 += __sign(nv)*v - nv
-                    operands[i] = Expression([v1, v2], op)
-        return Expression(
+                    operands[i] = ExpressionV2.make([v1, v2], [op])
+                    print(operands[i].treeRepr())
+        return ExpressionV2.make(
             operands,
             operators,
             applyRandomNegation=True
@@ -95,7 +96,8 @@ class FourOperations(ExerciseBase):
 
     def validateAnswer(self, q, a):
         if isInt(a):
-            return 0 if int(a) == round(self.exp.eval()) else 1
+            # return 0 if int(a) == round(self.exp.eval()) else 1
             # the following is for debug only
-            # return 0 if round(eval(q)) == round(self.exp.eval()) else 1
+            print(self.exp.eval())
+            return 0 if round(eval(q)) == round(self.exp.eval()) else 1
         return -1

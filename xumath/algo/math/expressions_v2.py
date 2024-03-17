@@ -87,7 +87,7 @@ class ExpressionV2:
         # all ops should have the same precedence
         assert len(set(cls.getOpPrecedences(ops))) == 1
         if shuffleOperatorsWReplacement:
-            ops = [random.choice(ops) for _ in range(len(expsOrVals))]
+            ops = [random.choice(ops) for _ in range(len(expsOrVals)-1)]
         assert len(ops) > 0 and len(expsOrVals) == len(ops) + 1
 
         def __buildTree(_vals, _ops):
@@ -238,8 +238,9 @@ class ExpressionV2:
             return rs, rp
 
         s = __postorder(self)[0]
-        if EXPRESSION_DEBUG and abs(eval(s) - self.eval()) > 1e-16:
-            print(s)
+        if EXPRESSION_DEBUG:
+            print(self.treeRepr())
+            assert abs(eval(s) - self.eval()) < 1e-16
         return s
 
     def __repr__(self):
