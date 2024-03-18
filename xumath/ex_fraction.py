@@ -1,9 +1,7 @@
 import random
 # internal modules
-from algo.math.fractions_v2 import (
-    FractionV2,
-    FractionExpressionV2,
-)
+from algo.math.expressions_v2 import ExpressionV2
+from algo.math.fractions_v2 import FractionV2
 from algo.math.int_gen import (
     genRandIntLsByNDigs,
 )
@@ -38,7 +36,7 @@ class ExFractions(ExerciseBase):
             return "Simplify the following fraction:\n%s" % str(self.exp)
         elif self.level == 1:
             operands = [self.__genFr() for _ in range(random.choice([2, 3]))]
-            self.exp = FractionExpressionV2.make(
+            self.exp = ExpressionV2.make(
                 operands,
                 ["+", "-"],
                 applyRandomNegation=True,

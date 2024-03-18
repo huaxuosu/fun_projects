@@ -1,6 +1,5 @@
 import re
 # internal modules
-from .expressions_v2 import ExpressionV2
 from .int_mul_fac import (
     gcd,
     lcm,
@@ -19,7 +18,7 @@ class FractionV2:
     __d always > 0
     """
 
-    EPS = 1e-16
+    EPS = 1e-10
 
     @staticmethod
     def chkDenom(denom):
@@ -65,10 +64,10 @@ class FractionV2:
     def denom(self):
         return self.__d
 
-    def copy(self):
+    def __copy__(self):
         return FractionV2(self.__n, self.__d)
 
-    def toFloat(self):
+    def __float__(self):
         return float(self.__n) / self.__d
 
     def simplify(self, fac=None):
@@ -198,26 +197,3 @@ class FractionV2:
             return self.__n * other.__d >= self.__d * other.__n
         # other could be just a number
         return self.__n / self.__d >= other
-
-
-class FractionExpressionV2(ExpressionV2):
-    """
-    Math expression for fractions
-    """
-    SUPPORTED_VAL_CLASSES = {FractionV2}
-    SUPPORTED_OPERATORS = ["**", "*", "/", "+", "-"]
-
-    @classmethod
-    def copyValOrExp(cls, orig):
-        if isinstance(orig, FractionV2):
-            return orig.copy()
-        return ExpressionV2.copyValOrExp(orig)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def _debug(self, s):
-        if FRACTION_V2_DEBUG:
-            print(self.treeRepr())
-            print(self.eval().toFloat(), eval(s))
-            assert abs(self.eval().toFloat() - eval(s)) < 1e-16

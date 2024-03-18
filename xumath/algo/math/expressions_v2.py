@@ -2,6 +2,9 @@ import numbers
 import operator
 import random
 import typing
+import copy
+# internal modules
+from .fractions_v2 import FractionV2
 
 # debug mode
 EXPRESSION_V2_DEBUG = True
@@ -21,7 +24,7 @@ class ExpressionV2:
     All leaves are values or None
     All other nodes are operators
     """
-    SUPPORTED_VAL_CLASSES = {numbers.Number}
+    SUPPORTED_VAL_CLASSES = {numbers.Number, FractionV2}
     SUPPORTED_OPERATORS = ["**", "*", "/", "//", "%", "+", "-"]
     OPERATORS_PRECEDENCES = {
         "**": 1,
@@ -111,7 +114,7 @@ class ExpressionV2:
     @classmethod
     def copyValOrExp(cls, orig):
         if orig is None or not isinstance(orig, cls):
-            return orig
+            return copy.copy(orig)
         return cls(
             cls.copyValOrExp(orig.left),
             orig.op,
@@ -247,16 +250,14 @@ class ExpressionV2:
             return rs, rp
 
         s = __postorder(self)[0]
-        self._debug(s)
+        if EXPRESSION_V2_DEBUG:
+            print(self.treeRepr())
+            print(float(self.eval()), eval(s))
+            assert abs(float(self.eval()) - eval(s)) < 1e-16
         return s
 
     def __repr__(self):
         return str(self)
-
-    def _debug(self, s):
-        if EXPRESSION_V2_DEBUG:
-            print(self.treeRepr())
-            assert abs(self.eval() - eval(s)) < 1e-16
 
     ###
     # Binary Operators overloading
