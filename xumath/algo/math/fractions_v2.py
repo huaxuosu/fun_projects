@@ -1,22 +1,25 @@
-import random
 import re
 # internal modules
 from .expressions_v2 import ExpressionV2
-from .int_misc import extractAllIntsFrom
 from .int_mul_fac import (
     gcd,
     lcm,
 )
 
+# debug mode
+FRACTION_V2_DEBUG = True
 
-class Fraction:
+
+class FractionV2:
     """
-    Fraction:
+    FractionV2:
     A fraction is represented as __n / __d, i.e. numerator / denominator
-    if __d is None or 1, it is a integer equal to __n
-    A fraction can negative, if so, __n < 0
+    if __d is 1, it is a integer equal to __n
+    A fraction can be negative, if so, __n < 0
     __d always > 0
     """
+
+    EPS = 1e-16
 
     @staticmethod
     def chkDenom(denom):
@@ -24,6 +27,10 @@ class Fraction:
 
     @classmethod
     def fromStr(cls, s):
+        if re.search(r"^\s*([+-]?)\s*(\d+)\s*$", s):
+            # it is an integer
+            return FractionV2(int(s))
+
         m = re.search(r"^\s*([+-]?)\s*(\d+)\s*/\s*(\d+)$", s)
         if m:
             sign, num, denom = m.groups()
@@ -37,10 +44,15 @@ class Fraction:
         num += i * denom
         if sign == "-":
             num = -num
-        return Fraction(num, denom)
+        return FractionV2(num, denom)
 
     def __init__(self, num=0, denom=1):
-        assert isinstance(num, int) and Fraction.chkDenom(denom)
+        if denom is None:
+            denom = 1
+        if denom < 0:
+            denom = -denom
+            num = -num
+        assert isinstance(num, int) and self.__class__.chkDenom(denom)
         # default is an integer of 0
         self.__n = num
         self.__d = denom
@@ -54,7 +66,7 @@ class Fraction:
         return self.__d
 
     def copy(self):
-        return Fraction(self.__n, self.__d)
+        return FractionV2(self.__n, self.__d)
 
     def toFloat(self):
         return float(self.__n) / self.__d
@@ -66,21 +78,21 @@ class Fraction:
         if fac is None:
             fac = gcd(abs(self.__n), self.__d) if self.__n != 0 else self.__d
         else:
-            assert Fraction.chkDenom(fac) and self.__n % fac == self.__d % fac == 0
-        return Fraction(self.__n//fac, self.__d//fac)
+            assert self.__class__.chkDenom(fac) and self.__n % fac == self.__d % fac == 0
+        return FractionV2(self.__n // fac, self.__d // fac)
 
     def complicate(self, fac):
         """
         inverse of simplify
         """
-        assert Fraction.chkDenom(fac)
-        return Fraction(self.__n*fac, self.__d*fac)
+        assert self.__class__.chkDenom(fac)
+        return FractionV2(self.__n * fac, self.__d * fac)
 
     def changeDenom(self, denom):
         """
         set denom to a new value
         """
-        assert Fraction.chkDenom(denom)
+        assert self.__class__.chkDenom(denom)
         if denom > self.__d:
             assert denom % self.__d == 0
             return self.complicate(denom // self.__d)
@@ -88,11 +100,11 @@ class Fraction:
         return self.simplify(self.__d // denom)
 
     def isIdenticalTo(self, other):
-        assert isinstance(other, Fraction)
+        assert isinstance(other, FractionV2)
         return self.__n == other.__n and self.__d == other.__d
 
     def __str__(self):
-        return "%d / %d" % (self.__n, self.__d) if self.__d > 1 else str(self.__n)
+        return "(%d/%d)" % (self.__n, self.__d) if self.__d > 1 else str(self.__n)
 
     def __repr__(self):
         return str(self)
@@ -101,208 +113,111 @@ class Fraction:
     # Operators overloading
     ###
     def __neg__(self):
-        return Fraction(-self.__n, self.__d)
+        return FractionV2(-self.__n, self.__d)
 
     def __add__(self, other):
-        if not isinstance(other, Fraction):
-            other = Fraction(other)
+        if not isinstance(other, FractionV2):
+            other = FractionV2(other)
         # least common denom
-        lcd = lcm(self.__d, other.__d)
-        return Fraction(
-            self.__n * (lcd // self.__d) + other.__n * (lcd // other.__d),
-            lcd,
+        lcdenom = lcm(self.__d, other.__d)
+        return FractionV2(
+            self.__n * (lcdenom // self.__d) + other.__n * (lcdenom // other.__d),
+            lcdenom,
         ).simplify()
 
     def __sub__(self, other):
-        if not isinstance(other, Fraction):
-            other = Fraction(other)
+        if not isinstance(other, FractionV2):
+            other = FractionV2(other)
         # least common denom
-        lcd = lcm(self.__d, other.__d)
-        return Fraction(
-            self.__n * (lcd // self.__d) - other.__n * (lcd // other.__d),
-            lcd,
+        lcdenom = lcm(self.__d, other.__d)
+        return FractionV2(
+            self.__n * (lcdenom // self.__d) - other.__n * (lcdenom // other.__d),
+            lcdenom,
         ).simplify()
 
     def __mul__(self, other):
-        if not isinstance(other, Fraction):
-            other = Fraction(other)
-        return Fraction(
+        if not isinstance(other, FractionV2):
+            other = FractionV2(other)
+        return FractionV2(
             self.__n * other.__n,
             self.__d * other.__d,
         ).simplify()
 
     def __truediv__(self, other):
-        if not isinstance(other, Fraction):
-            other = Fraction(other)
-        return Fraction(
+        if not isinstance(other, FractionV2):
+            other = FractionV2(other)
+        return FractionV2(
             self.__n * other.__d,
             self.__d * other.__n,
         ).simplify()
 
     def __floordiv__(self, other):
-        return self.__truediv__(other)
+        raise NotImplementedError
 
     def __mod__(self, other):
         raise NotImplementedError
 
     def __pow__(self, p):
-        return Fraction(
+        return FractionV2(
             self.__n ** p,
             self.__d ** p,
         ).simplify()
 
     def __eq__(self, other):
-        if isinstance(other, Fraction):
+        if isinstance(other, FractionV2):
             return self.__n * other.__d == self.__d * other.__n
         # other could be just a number
-        return abs(self.__n/self.__d - other) < 1e-16
+        return abs(self.__n/self.__d - other) < self.__class__.EPS
 
     def __ne__(self, other):
-        if isinstance(other, Fraction):
+        if isinstance(other, FractionV2):
             return self.__n * other.__d != self.__d * other.__n
         # other could be just a number
-        return abs(self.__n / self.__d - other) >= 1e-16
+        return abs(self.__n / self.__d - other) >= self.__class__.EPS
 
     def __lt__(self, other):
-        if isinstance(other, Fraction):
+        if isinstance(other, FractionV2):
             return self.__n * other.__d < self.__d * other.__n
         # other could be just a number
         return self.__n / self.__d < other
 
     def __gt__(self, other):
-        if isinstance(other, Fraction):
+        if isinstance(other, FractionV2):
             return self.__n * other.__d > self.__d * other.__n
         # other could be just a number
         return self.__n / self.__d > other
 
     def __le__(self, other):
-        if isinstance(other, Fraction):
+        if isinstance(other, FractionV2):
             return self.__n * other.__d <= self.__d * other.__n
         # other could be just a number
         return self.__n / self.__d <= other
 
     def __ge__(self, other):
-        if isinstance(other, Fraction):
+        if isinstance(other, FractionV2):
             return self.__n * other.__d >= self.__d * other.__n
         # other could be just a number
         return self.__n / self.__d >= other
 
 
-class FractionExpression(Expression):
+class FractionExpressionV2(ExpressionV2):
     """
     Math expression for fractions
     """
-    SUPPORTED_VAL_CLASSES = {Fraction}
-    SUPPORTED_OPERATORS = ["**", "*", "/", "//", "+", "-"]
+    SUPPORTED_VAL_CLASSES = {FractionV2}
+    SUPPORTED_OPERATORS = ["**", "*", "/", "+", "-"]
+
+    @classmethod
+    def copyValOrExp(cls, orig):
+        if isinstance(orig, FractionV2):
+            return orig.copy()
+        return ExpressionV2.copyValOrExp(orig)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def __str__(self):
-        return str(FractionExpressionRepr(self))
-
-
-class FractionExpressionRepr:
-    """
-    A representation in strings for FractionExpression
-    """
-    def __init__(self, expOrFrac):
-        """
-        Fraction strings are represented in three rows
-         -num
-        -------
-         denom
-        """
-        self.__up = ""
-        self.__mid = ""
-        self.__low = ""
-        self.reset(expOrFrac)
-
-    def reset(self, expOrFrac=None):
-        assert isinstance(expOrFrac, FractionExpression) or isinstance(expOrFrac, Fraction)
-        if expOrFrac is None:
-            self.__up = self.__mid = self.__low = ""
-        if FractionExpression.isSupportedValType(expOrFrac):
-            self.resetByFraction(expOrFrac)
-        elif isinstance(expOrFrac, FractionExpression):
-            self.resetByExpression(expOrFrac)
-        else:
-            raise NotImplementedError
-
-    def resetByFraction(self, frac: Fraction):
-        num, denom = frac.num, frac.denom
-        i = abs(num) // denom if random.random() < 0.5 else 0
-        if i > 0:
-            num = abs(num) - i * denom
-            if num < 0:
-                i = -i
-        num, denom, i = str(num), str(denom), str(i) if i != 0 else ""
-        # len
-        k = max(len(num), len(denom))
-        self.__up = " "*(len(i)+1) + " "*((k-len(num))//2) + num + " "*((k-len(num)+1)//2 + 1)
-        self.__mid = i + "-"*(len(self.__up) - len(i))
-        self.__low = " "*(len(i)+1) + " "*((k-len(denom))//2) + denom + " "*((k-len(denom)+1)//2 + 1)
-        if i and i[0] == "-":
-            self.addOuterBracket()
-
-    def resetByExpression(self, exp: FractionExpression):
-
-        def __precedence(x):
-            return x.precedence if isinstance(x, Expression) else 0
-
-        if not exp.exps:
-            self.reset()
-            return
-        self.reset(exp.exps[0])
-        curPrecedence = __precedence(exp.exps[0])
-        for i, op in enumerate(exp.ops):
-            opPrecedence = exp.__class__.getOpPrecedences(op)
-            if curPrecedence > opPrecedence:
-                self.addOuterBracket()
-            self.addOpStr(op)
-            nxtExpOrVal = FractionExpressionRepr(exp.exps[i + 1])
-            if __precedence(exp.exps[i + 1]) >= opPrecedence:
-                nxtExpOrVal.addOuterBracket()
-            self.add(nxtExpOrVal)
-            curPrecedence = opPrecedence
-        if exp.sign == -1:
-            self.addNegation()
-
-    def addOuterBracket(self):
-        self.__up = " " + self.__up + " "
-        self.__mid = "(" + self.__mid + ")"
-        self.__low = " " + self.__low + " "
-
-    def addOpStr(self, op, sep=" "):
-        self.__up += sep + " "*len(op)
-        self.__mid += sep + op
-        self.__low += sep + " "*len(op)
-
-    def add(self, other, sep=" "):
-        self.__up += sep + other.__up
-        self.__mid += sep + other.__mid
-        self.__low += sep + other.__low
-
-    def addNegation(self):
-        assert bool(self.__mid)
-        if self.__mid[0] == "(":
-            self.__up = " " + self.__up
-            self.__mid = "-" + self.__mid
-            self.__low = " " + self.__low
-            return
-
-        upNums = extractAllIntsFrom(self.__up)
-        midNums = extractAllIntsFrom(self.__mid)
-        lowNums = extractAllIntsFrom(self.__low)
-        if re.search(r"^[-\s\d]+$", self.__mid) and len(upNums) == 1 and len(lowNums) == 1:
-            assert len(midNums) <= 1
-            frac = Fraction.fromStr("%d %d/%d" % (midNums[0] if midNums else 0, upNums[0], lowNums[0]))
-            self.reset()
-            self.add(FractionExpressionRepr(frac), sep="")
-        else:
-            # we need to add brackets first
-            self.addOuterBracket()
-            self.addNegation()
-
-    def __str__(self):
-        return "\n".join((self.__up, self.__mid, self.__low))
+    def _debug(self, s):
+        if FRACTION_V2_DEBUG:
+            print(self.treeRepr())
+            print(self.eval().toFloat(), eval(s))
+            assert abs(self.eval().toFloat() - eval(s)) < 1e-16

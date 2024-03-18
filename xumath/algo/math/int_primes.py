@@ -17,6 +17,7 @@ def findPrimes(n):
 
 
 def isPrime(n):
+    assert isinstance(n, int) and n > 1
     if n & 1 == 0 or n % 10 == 5 or sum(map(int, str(n))) % 3 == 0:
         return False
     return findPrimes(n)[-1] == n

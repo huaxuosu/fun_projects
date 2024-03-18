@@ -1,8 +1,8 @@
 import random
 # internal modules
-from algo.math.fractions import (
-    Fraction,
-    FractionExpression,
+from algo.math.fractions_v2 import (
+    FractionV2,
+    FractionExpressionV2,
 )
 from algo.math.int_gen import (
     genRandIntLsByNDigs,
@@ -34,9 +34,19 @@ class ExFractions(ExerciseBase):
     def generateExercise(self):
         if self.level == 0:
             # level 1
-            return self.__genFrSim()
+            self.exp = self.__genFr()
+            return "Simplify the following fraction:\n%s" % str(self.exp)
+        elif self.level == 1:
+            operands = [self.__genFr() for _ in range(random.choice([2, 3]))]
+            self.exp = FractionExpressionV2.make(
+                operands,
+                ["+", "-"],
+                applyRandomNegation=True,
+                shuffleOperatorsWReplacement=True,
+            )
+            return str(self.exp)
 
-    def __genFrSim(self):
+    def __genFr(self):
         operands = genRandIntLsByNDigs(
             n=2,
             minNDigs=1,
@@ -44,12 +54,12 @@ class ExFractions(ExerciseBase):
             nonPrime=True,
             baseFac=self.intWSmallPrimeFacsGen.genInt(1) if random.random() < 2.0 / 3 else 1,
         )
-        self.exp = FractionExpression(Fraction(*operands))
-        return "Simplify the following fraction:\n%s" % str(self.exp)
+        return FractionV2(*operands)
 
     def validateAnswer(self, q, a):
-        ans = Fraction.fromStr(a)
+        ans = FractionV2.fromStr(a)
         if ans is not None:
-            print(ans, self.exp)
-            return 0 if ans.isIdenticalTo(self.exp.eval()) else 1
+            expected = self.exp.eval() if self.level > 0 else self.exp.simplify()
+            print(ans, expected)
+            return 0 if ans.isIdenticalTo(expected) else 1
         return -1

@@ -15,7 +15,7 @@ def genRandIntByNDigs(minNDigs, maxNDigs=None, nonPrime=False, baseFac=1):
     """
     maxNDigs = maxNDigs or minNDigs
     ret = None
-    while ret is None or (nonPrime and isPrime(ret)):
+    while ret is None or (nonPrime and (ret == 1 or isPrime(ret))):
         ret = random.randint(10**(minNDigs-1), 10**maxNDigs-1)
     if baseFac > 1:
         ret = (ret + baseFac - 1) // baseFac * baseFac
