@@ -1,4 +1,3 @@
-import numbers
 import operator
 import random
 import typing
@@ -14,7 +13,7 @@ class ExpressionV2:
     """
     Expression:
     a math expression
-    it contains expressions/values and operators (list of strings)
+    it contains expressions/values and operators
     supported operators:
         **
         *, /, //, %
@@ -24,7 +23,7 @@ class ExpressionV2:
     All leaves are values or None
     All other nodes are operators
     """
-    SUPPORTED_VAL_CLASSES = {numbers.Number, FractionV2}
+    SUPPORTED_VAL_CLASSES = {int, FractionV2}
     SUPPORTED_OPERATORS = ["**", "*", "/", "//", "%", "+", "-"]
     OPERATORS_PRECEDENCES = {
         "**": 1,
@@ -96,18 +95,19 @@ class ExpressionV2:
             ops = [random.choice(ops) for _ in range(len(expsOrVals)-1)]
         assert len(ops) > 0 and len(expsOrVals) == len(ops) + 1
 
-        def __buildTree(_vals, _ops):
-            if len(_vals) == 1:
-                return _vals[0]
-            nd = cls(_vals[0], _ops[0], _vals[1])
-            return __buildTree([nd] + _vals[2:], _ops[1:])
-
         if applyRandomNegation:
             for i in range(len(expsOrVals)):
                 # do negation if it is a num or exp when applyRandomNegationToExps = True
                 toApply = not isinstance(expsOrVals[i], cls) or applyRandomNegationToExps
                 if toApply and random.choice([0, 1]) == 1:
                     expsOrVals[i] = -expsOrVals[i]
+
+        def __buildTree(_vals, _ops):
+            if len(_vals) == 1:
+                assert len(_ops) == 0
+                return _vals[0]
+            nd = cls(_vals[0], _ops[0], _vals[1])
+            return __buildTree([nd] + _vals[2:], _ops[1:])
 
         return __buildTree(expsOrVals, ops)
 
