@@ -111,16 +111,6 @@ class ExpressionV2:
 
         return __buildTree(expsOrVals, ops)
 
-    @classmethod
-    def copyValOrExp(cls, orig):
-        if orig is None or not isinstance(orig, cls):
-            return copy.copy(orig)
-        return cls(
-            cls.copyValOrExp(orig.left),
-            orig.op,
-            cls.copyValOrExp(orig.right),
-        )
-
     def __init__(self, leftOperand, operatorStr, rightOperand):
         """
         An expression is
@@ -131,9 +121,9 @@ class ExpressionV2:
         assert operatorStr in self.__class__.SUPPORTED_OPERATORS
         assert leftOperand is None or self.__class__.isValidOperand(leftOperand)
         assert self.__class__.isValidOperand(rightOperand)
-        self.left = self.__class__.copyValOrExp(leftOperand)
+        self.left = leftOperand
         self.op = operatorStr
-        self.right = self.__class__.copyValOrExp(rightOperand)
+        self.right = rightOperand
 
     def applyRandomNegationRecursively(self, applyRandomNegationToExps=False):
         """
@@ -146,12 +136,12 @@ class ExpressionV2:
                 # a leaf
                 return -nd \
                     if nd is not None and random.choice([0, 1]) == 1 \
-                    else self.__class__.copyValOrExp(nd)
+                    else copy.copy(nd)
             nd.left = __postorder(nd.left)
             nd.right = __postorder(nd.right)
             if applyRandomNegationToExps and random.choice([0, 1]) == 1:
                 return -nd
-            return self.__class__.copyValOrExp(nd)
+            return copy.copy(nd)
 
         return __postorder(self)
 
@@ -166,10 +156,10 @@ class ExpressionV2:
     def __neg__(self):
         if self.left is not None:
             # binary
-            return self.__class__(None, "-", self.__class__.copyValOrExp(self))
+            return self.__class__(None, "-", copy.copy(self))
         elif self.op == "-":
-            return self.__class__.copyValOrExp(self.right)
-        return self.__class__(None, "-", self.__class__.copyValOrExp(self.right))
+            return copy.copy(self.right)
+        return self.__class__(None, "-", copy.copy(self.right))
 
     def eval(self):
 
@@ -186,8 +176,12 @@ class ExpressionV2:
 
         return __postorder(self)
 
-    def copy(self):
-        self.__class__.copyValOrExp(self)
+    def __copy__(self):
+        return self.__class__(
+            copy.copy(self.left),
+            self.op,
+            copy.copy(self.right),
+        )
 
     def treeRepr(self):
 
