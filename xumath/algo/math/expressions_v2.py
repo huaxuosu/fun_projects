@@ -121,9 +121,9 @@ class ExpressionV2:
         assert operatorStr in self.__class__.SUPPORTED_OPERATORS
         assert leftOperand is None or self.__class__.isValidOperand(leftOperand)
         assert self.__class__.isValidOperand(rightOperand)
-        self.left = leftOperand
+        self.left = copy.copy(leftOperand)
         self.op = operatorStr
-        self.right = rightOperand
+        self.right = copy.copy(rightOperand)
 
     def applyRandomNegationRecursively(self, applyRandomNegationToExps=False):
         """
@@ -156,10 +156,10 @@ class ExpressionV2:
     def __neg__(self):
         if self.left is not None:
             # binary
-            return self.__class__(None, "-", copy.copy(self))
+            return self.__class__(None, "-", self)
         elif self.op == "-":
             return copy.copy(self.right)
-        return self.__class__(None, "-", copy.copy(self.right))
+        return self.__class__(None, "-", self.right)
 
     def eval(self):
 
@@ -177,11 +177,7 @@ class ExpressionV2:
         return __postorder(self)
 
     def __copy__(self):
-        return self.__class__(
-            copy.copy(self.left),
-            self.op,
-            copy.copy(self.right),
-        )
+        return self.__class__(self.left, self.op, self.right)
 
     def treeRepr(self):
 
