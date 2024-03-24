@@ -28,7 +28,7 @@ class FractionV2:
     def fromStr(cls, s):
         if re.search(r"^\s*([+-]?)\s*(\d+)\s*$", s):
             # it is an integer
-            return FractionV2(int(s))
+            return cls(int(s))
 
         m = re.search(r"^\s*([+-]?)\s*(\d+)\s*/\s*(\d+)$", s)
         if m:
@@ -43,14 +43,13 @@ class FractionV2:
         num += i * denom
         if sign == "-":
             num = -num
-        return FractionV2(num, denom)
+        return cls(num, denom)
 
     def __init__(self, num=0, denom=1):
         if denom is None:
             denom = 1
         if denom < 0:
-            denom = -denom
-            num = -num
+            denom, num = -denom, -num
         assert isinstance(num, int) and self.__class__.chkDenom(denom)
         # default is an integer of 0
         self.__n = num

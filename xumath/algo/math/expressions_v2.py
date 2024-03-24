@@ -223,7 +223,10 @@ class ExpressionV2:
             # return str rep and op precedence
             if not isinstance(nd, self.__class__):
                 # a leaf
-                return str(nd), 0 if nd > 0 else self.__class__.__LEAST_OP_PRECEDENCE
+                precedence = 0 \
+                    if isinstance(nd, FractionV2) or nd > 0 \
+                    else self.__class__.__LEAST_OP_PRECEDENCE
+                return str(nd), precedence
             rs, rp = __postorder(nd.right)
             if nd.left is not None:
                 # binary
