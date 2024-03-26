@@ -4,9 +4,10 @@ from .int_mul_fac import (
     gcd,
     lcm,
 )
+from .constants import eps
 
 # debug mode
-FRACTION_V2_DEBUG = True
+FRACTION_V2_DEBUG = False
 
 
 class FractionV2:
@@ -17,8 +18,6 @@ class FractionV2:
     A fraction can be negative, if so, __n < 0
     __d always > 0
     """
-
-    EPS = 1e-10
 
     @staticmethod
     def chkDenom(denom):
@@ -165,13 +164,13 @@ class FractionV2:
         if isinstance(other, FractionV2):
             return self.__n * other.__d == self.__d * other.__n
         # other could be just a number
-        return abs(self.__n/self.__d - other) < self.__class__.EPS
+        return abs(self.__n/self.__d - other) < eps
 
     def __ne__(self, other):
         if isinstance(other, FractionV2):
             return self.__n * other.__d != self.__d * other.__n
         # other could be just a number
-        return abs(self.__n / self.__d - other) >= self.__class__.EPS
+        return abs(self.__n / self.__d - other) >= eps
 
     def __lt__(self, other):
         if isinstance(other, FractionV2):

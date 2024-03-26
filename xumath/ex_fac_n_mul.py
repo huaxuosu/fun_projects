@@ -192,6 +192,7 @@ class Multiples(ExFacMulBase):
         return "%s of %s between %d and %d" % (Multiples.Q_HEAD_FACM, vals, lb, ub)
 
     def validateAnswer(self, q, a):
+        a = a.strip()
         aInInts = parseCommaSepInts(a)
         if aInInts is None:
             return -1

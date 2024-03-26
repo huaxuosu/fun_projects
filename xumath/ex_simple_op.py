@@ -23,6 +23,7 @@ class ExSimpleOpBase(ExerciseBase):
         self.exp = ExpressionV2.make([n1, n2], [op])
 
     def validateAnswer(self, q, a):
+        a = a.strip()
         if isInt(a):
             return 0 if int(a) == round(self.exp.eval()) else 1
             # the following is for debug only

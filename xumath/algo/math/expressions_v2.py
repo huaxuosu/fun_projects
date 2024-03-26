@@ -4,9 +4,10 @@ import typing
 import copy
 # internal modules
 from .fractions_v2 import FractionV2
+from .constants import eps
 
 # debug mode
-EXPRESSION_V2_DEBUG = True
+EXPRESSION_V2_DEBUG = False
 
 
 class ExpressionV2:
@@ -246,7 +247,7 @@ class ExpressionV2:
         if EXPRESSION_V2_DEBUG:
             print(self.treeRepr())
             print(float(self.eval()), eval(s))
-            assert abs(float(self.eval()) - eval(s)) < 1e-16
+            assert abs(float(self.eval()) - eval(s)) < eps
         return s
 
     def __repr__(self):
