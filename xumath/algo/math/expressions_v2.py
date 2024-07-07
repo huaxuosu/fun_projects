@@ -24,7 +24,7 @@ class ExpressionV2:
     All leaves are values or None
     All other nodes are operators
     """
-    SUPPORTED_VAL_CLASSES = {int, FractionV2}
+    SUPPORTED_VAL_CLASSES = {int, float, FractionV2}
     SUPPORTED_OPERATORS = ["**", "*", "/", "//", "%", "+", "-"]
     OPERATORS_PRECEDENCES = {
         "**": 1,
@@ -161,6 +161,21 @@ class ExpressionV2:
         elif self.op == "-":
             return copy.copy(self.right)
         return self.__class__(None, "-", self.right)
+
+    def convertToDecimalsByRandomFactors(self, minMag, maxMag):
+        # conver each number to a decimal by dividing it by 10 ^ random.randint(minMag, maxMag)
+
+        def __preorder(nd):
+            if isinstance(nd, int):
+                # a leaf
+                return nd / 10.0 ** random.randint(minMag, maxMag)
+            if not isinstance(nd, self.__class__):
+                return nd
+            lnd = __preorder(nd.left)
+            rnd = __preorder(nd.right)
+            return self.__class__(lnd, nd.op, rnd)
+
+        return __preorder(self)
 
     def eval(self):
 

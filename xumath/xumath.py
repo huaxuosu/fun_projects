@@ -24,6 +24,7 @@ from ex_fac_n_mul import (
     Multiples,
 )
 from ex_fraction import ExFractions
+from ex_decimal import Decimals
 
 __version__ = "v0.0.2"
 __user__ = "hanyong"
@@ -55,6 +56,7 @@ def main():
         Factors,
         Multiples,
         ExFractions,
+        Decimals,
         baseClass=ExerciseBase,
     )
 
