@@ -30,6 +30,13 @@ __version__ = "v0.0.2"
 __user__ = "hanyong"
 
 
+"""
+To do:
+- variables & equations
+- power / exponential / logarithm / sqaure/cube & root
+"""
+
+
 def main():
     print(
         framedStr("XU MATH"),
