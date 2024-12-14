@@ -129,7 +129,7 @@ class Solver:
 
 if __name__ == "__main__":
     ###
-    # Crack codes with 6 elementy colors and a length of 4
+    # Crack codes with 6 element colors and a length of 4
     ###
     codeElems = ["red", "blue", "green", "yellow", "white", "black"]
     solver = Solver(codeElems, codeLen=4)
