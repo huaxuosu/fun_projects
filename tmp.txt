@@ -1,0 +1,37 @@
+    (("DIRECT DEBIT", "RIDGEFIELD LAWSALE"), "0 homeutil-misc")
+    ("INTEREST EARNED", "0 deposit-interest")
+    (("Check", "Paid"), "6 payment-check"),
+
+    (("DIRECT DEBIT", "APPLE GS", "SAVINACCTVERIFY"), "0 misc-ignore"),
+    (("DIRECT DEBIT", "BANK OF AMERICACCTVERIFY"), "0 misc-ignore"),
+    (("DIRECT DEBIT", "CITI CARD", "TRIAACCTVERIFY"), "0 misc-ignore"),
+    (("DIRECT DEBIT", "VENMO", "ACCTVERIFY"), "0 misc-ignore"),
+    (("DIRECT DEPOSIT", "APPLE GS", "SAVACCTVERIFY"), "0 misc-ignore"),
+    (("DIRECT DEPOSIT", "BANK OF AMERACCTVERIFY"), "0 misc-ignore"),
+    (("DIRECT DEPOSIT", "CITI CARD", "TRACCTVERIFY"), "0 misc-ignore"),
+    (("DIRECT DEPOSIT", "VENMO", "ACCTVERIFY"), "0 misc-ignore"),
+    (("DIRECT DEPOSIT", "Valon", "MortgaPAYMENT"), "0 misc-ignore"),
+
+
+    (("DIRECT DEBIT", "APPLECARD", "GSBAPAYMENT"), "0 payment-cc-apple"),
+    (("DIRECT DEBIT", "BANK OF AMERICONLINE", "PMT"), "0 payment-cc-boa"),
+    (("DIRECT DEBIT", "CARDMEMBER", "SERWEB", "PYMT"), "0 payment-cc-fd"),
+    (("DIRECT DEBIT", "CITI", "AUTOPAY", "PAYMENT"), "0 payment-cc-citi"),
+    (("DIRECT DEBIT", "EVERSOURCE", "WEB_PAY"), "0 homeutil-elec"),
+    (("DIRECT DEBIT", "LOANCARE", "SERV", "MTG", "PYMT"), "9 loan-rentals"),
+    (("DIRECT DEBIT", "PROVIDENT", "FUNDACH", "PMT"), "9 loan-rentals"),
+    (("DIRECT DEBIT", "VENMO", "PAYMENT"), "6 payment-venmo"),
+    (("DIRECT DEBIT", "Valon", "MortgagePayment"), "0 loan-home"),
+
+    (("DIRECT DEPOSIT", "ELAN", "CARDSVCRedemption"), "0 payment-cc-fd"),
+
+    (("DIRECT DEPOSIT", "UBER", "TECHNOLDIRECT", "DEP"), "0 paycheck-uber"),
+    (("DIRECT DEPOSIT", "VENMO", "CASHOUT"), "1 deposit-venmo"),
+
+
+    (("DIVIDEND RECEIVED", "FIDELITY", "GOVERNMENT", "MONEY MARKET"), "0 misc-fd-div"),
+    (("REINVESTMENT", "FIDELITY", "GOVERNMENT", "MONEY MARKET"), "0 misc-fd-div"),
+
+    ("TRANSFERRED FROM VS", "0 transfer-inbank"),
+    ("TRANSFERRED TO VS", "0 transfer-inbank"),
+    
